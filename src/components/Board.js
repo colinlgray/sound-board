@@ -8,9 +8,19 @@ export default function Board() {
   for (let i = 0; i < size; i++) {
     let inner = [];
     for (let j = 0; j < size; j++) {
-      inner.push(<Button row={i} column={j} />);
+      inner.push(<Button key={`button-${i}-${j}`} row={i} column={j} />);
     }
     domEl.push(inner);
   }
-  return <div>{domEl}</div>;
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "40px 40px 40px 40px 40px ",
+        gridTemplateRows: "40px 40px 40px 40px 40px "
+      }}
+    >
+      {domEl}
+    </div>
+  );
 }

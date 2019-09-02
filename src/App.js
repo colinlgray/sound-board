@@ -1,10 +1,10 @@
 import React from "react";
 import Board from "./components/Board";
-import "./App.css";
+import "./styles/tailwind.css";
 
 function App() {
   return (
-    <div className="App">
+    <div className="flex h-screen items-center justify-center">
       <Board />
     </div>
   );
