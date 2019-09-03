@@ -8,13 +8,10 @@ export default function Button(props) {
     { "bg-gray-700": !props.highlight }
   );
   return (
-    <input
+    <div
+      style={{ transition: "background-color 400ms ease" }}
       className={classes}
-      type="button"
       key={`button-${props.row}-${props.column}`}
-      onClick={() => {
-        console.log("Clicked button at", props.row, props.column);
-      }}
-    />
+    ></div>
   );
 }
