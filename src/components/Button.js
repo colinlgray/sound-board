@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import clsx from "clsx";
-import { scheduleNote } from "../utils/Player";
+import { play } from "../utils/Player";
 
 export default function Button(props) {
   useEffect(() => {
     if (props.highlight) {
-      scheduleNote(props.row, props.column);
+      play(props.row, props.column);
     }
   }, [props.highlight, props.row, props.column]);
   let classes = clsx(

@@ -19,6 +19,18 @@ export const play = (row, col) => {
   }
 };
 
-export const scheduleNote = (row, col, time) => {
-  console.log("schedle", toNote(row, col), time);
+let callbacks = [];
+
+export const createLoop = callback => {
+  new Tone.Loop(callback, "8n").start(0);
+};
+
+export const startLoop = fn => {
+  Tone.Transport.start();
+  callbacks.push(fn);
+};
+
+export const stopLoop = () => {
+  Tone.Transport.stop();
+  callbacks = [];
 };

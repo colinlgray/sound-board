@@ -7,15 +7,23 @@ const getStartingArray = size => {
 const startingTimeout = 500;
 const delay = 100;
 const subtract = 100;
-const maxRipple = 2;
+const maxRipple = 0;
 
 export default function Board(props) {
   const { size } = props;
   const [board, setBoard] = useState(getStartingArray(size));
 
+  const tick = step => {
+    console.log("tick", step);
+  };
+
   useEffect(() => {
     setBoard(getStartingArray(props.size));
   }, [props.size]);
+
+  useEffect(() => {
+    tick(props.step);
+  }, [props.step]);
 
   const setAndUnset = params => {
     // TODO: Refactor this to use the Tone tick
