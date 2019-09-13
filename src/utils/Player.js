@@ -1,26 +1,24 @@
-import * as mm from "@magenta/music";
+import Tone from "tone";
 
-const mmPlayer = new mm.Player();
-let _started = false;
-export const player = {
-  play(val) {
-    console.log("val", val + 20);
-    if (!_started) {
-      mmPlayer.resumeContext();
-      _started = true;
-    }
-    mmPlayer.start({
-      notes: [
-        {
-          pitch: val + 30,
-          quantizedStartStep: 0,
-          quantizedEndStep: 1,
-          isDrum: true
-        }
-      ],
-      quantizationInfo: { stepsPerQuarter: 4 },
-      tempos: [{ time: 0, qpm: 120 }],
-      totalQuantizedSteps: 1
-    });
+let synth = null;
+
+const notes = ["C", "D", "E", "F", "G", "A", "B", "C"];
+export const changeInstrument = val => {
+  synth = new Tone[val]().toMaster();
+};
+
+const toNote = (row, col) => {
+  return `${notes[row]}${col + 1}`;
+};
+export const play = (row, col) => {
+  if (synth === null) {
+    changeInstrument("Synth");
   }
+  if (notes[row]) {
+    synth.triggerAttackRelease(toNote(row, col), "8n");
+  }
+};
+
+export const scheduleNote = (row, col, time) => {
+  console.log("schedle", toNote(row, col), time);
 };

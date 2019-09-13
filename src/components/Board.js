@@ -1,41 +1,108 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Button from "./Button";
-import { player } from "../utils/Player";
+const getStartingArray = size => {
+  return new Array(size).fill(null).map(() => new Array(size).fill(false));
+};
+
+const startingTimeout = 500;
+const delay = 100;
+const subtract = 100;
+const maxRipple = 2;
 
 export default function Board(props) {
-  const handleClick = (row, column) => {
-    player.play(row * props.size + column);
+  const { size } = props;
+  const [board, setBoard] = useState(getStartingArray(size));
+
+  useEffect(() => {
+    setBoard(getStartingArray(props.size));
+  }, [props.size]);
+
+  const setAndUnset = params => {
+    // TODO: Refactor this to use the Tone tick
+    const { row, column, time, prev } = params;
+    if (board[row][column] === true) {
+      return;
+    }
+    let clone = [...board];
+    clone[row][column] = true;
+    setBoard(clone);
+    setTimeout(() => {
+      let cloneTwo = [...board];
+      cloneTwo[row][column] = false;
+      setBoard(cloneTwo);
+    }, time);
+    if (time > subtract) {
+      let moveDown = row < size - 1 && prev.row <= row;
+      let moveUp = row > 0 && prev.row >= row;
+      let moveLeft = column > 0 && prev.column >= column;
+      let moveRight = column < size - 1 && prev.column <= column;
+      if (moveRight) {
+        move({ ...params, column: column + 1 });
+      }
+      if (moveLeft) {
+        move({ ...params, column: column - 1 });
+      }
+      if (moveDown) {
+        move({ ...params, row: row + 1 });
+      }
+      if (moveUp) {
+        move({ ...params, row: row - 1 });
+      }
+    }
   };
 
-  const domEl = [];
-  const { size, step } = props;
-  for (let i = 0; i < size; i++) {
-    let inner = [];
-    for (let j = 0; j < size; j++) {
-      inner.push(
-        <Button
-          key={`button-${i}-${j}`}
-          row={i}
-          column={j}
-          highlight={step === j}
-          onClick={() => {
-            handleClick(i, j);
-          }}
-        />
-      );
+  let move = params => {
+    if (params.remainingMoves <= 0) {
+      return;
     }
-    domEl.push(inner);
-  }
+    const newTime = params.time - subtract;
+    setTimeout(() => {
+      setAndUnset({
+        ...params,
+        time: newTime,
+        prev: { row: params.prev.row, column: params.prev.column },
+        remainingMoves: params.remainingMoves - 1
+      });
+    }, delay);
+  };
+
   return (
     <div
       style={{
         gridTemplateColumns: `repeat(${size}, 1fr)`,
         gridTemplateRows: `repeat(${size}, 1fr)`,
         display: "grid",
-        gridGap: "8px"
+        gridGap: "8px",
+        opacity: props.done ? 0 : 1,
+        transition: "opacity 1s ease"
       }}
     >
-      {domEl}
+      {board.map((row, rowIdx) =>
+        row.map((highlight, colIdx) => {
+          return (
+            <Button
+              key={`button-${rowIdx}-${colIdx}`}
+              row={rowIdx}
+              column={colIdx}
+              highlight={highlight}
+              color={"Gray"}
+              idx={rowIdx * size + colIdx}
+              onClick={() => {
+                setAndUnset({
+                  row: rowIdx,
+                  column: colIdx,
+                  time: startingTimeout,
+                  prev: {
+                    row: rowIdx,
+                    column: colIdx
+                  },
+                  remainingMoves: maxRipple
+                });
+              }}
+            />
+          );
+        })
+      )}
     </div>
   );
 }
