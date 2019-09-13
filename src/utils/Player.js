@@ -3,14 +3,14 @@ import Tone from "tone";
 let synth = null;
 
 const notes = ["C", "D", "E", "F", "G", "A", "B", "C"];
-export const changeInstrument = val => {
+const changeInstrument = val => {
   synth = new Tone[val]().toMaster();
 };
 
 const toNote = (row, col) => {
   return `${notes[row]}${col + 1}`;
 };
-export const play = (row, col) => {
+const play = (row, col) => {
   if (synth === null) {
     changeInstrument("Synth");
   }
@@ -19,18 +19,28 @@ export const play = (row, col) => {
   }
 };
 
-let callbacks = [];
+let callback = () => {};
+let loop = null;
 
-export const createLoop = callback => {
-  new Tone.Loop(callback, "8n").start(0);
+const createLoop = fn => {
+  callback = fn;
+  loop = new Tone.Loop(callback, "8n").start(0);
 };
 
-export const startLoop = fn => {
+const startLoop = fn => {
   Tone.Transport.start();
-  callbacks.push(fn);
+  window.asd = loop;
 };
 
-export const stopLoop = () => {
+const stopLoop = () => {
   Tone.Transport.stop();
-  callbacks = [];
+  callback = () => {};
+};
+
+export default {
+  changeInstrument,
+  startLoop,
+  stopLoop,
+  createLoop,
+  play
 };
