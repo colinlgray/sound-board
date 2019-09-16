@@ -5,8 +5,10 @@ import "./styles/tailwind.css";
 
 const initialStep = -1;
 const size = 8;
+const initialRows = [{ instrument: "Synth", note: "F4" }];
 function App() {
   const [step, setStep] = useState(initialStep);
+  const [rows] = useState(initialRows);
   const stepContainer = useRef(step);
   const callbackContainer = useRef([]);
 
@@ -69,7 +71,7 @@ function App() {
         </button>
       </div>
       <div className="p-4">
-        <Board size={size} step={step} emitter={emitter} />
+        <Board size={size} step={step} emitter={emitter} instruments={rows} />
       </div>
     </div>
   );

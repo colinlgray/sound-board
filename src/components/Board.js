@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from "react";
 import Button from "./Button";
-import Player from "../utils/Player";
 
-const getStartingArray = size => {
-  return new Array(size).fill(null).map(() => {
+const getStartingArray = (size, instruments) => {
+  return new Array(instruments.length).fill(0).map((_, idx) => {
     return new Array(size).fill(0).map(() => {
-      return {};
+      return { ...instruments[idx], clicked: false };
     });
   });
 };
 
 export default function Board(props) {
   const { size } = props;
-  const [board, setBoard] = useState(getStartingArray(size));
-
+  const [board, setBoard] = useState(getStartingArray(size, props.instruments));
   useEffect(() => {
     props.emitter.addEventListener("clear", () => {
-      setBoard(getStartingArray(props.size));
+      setBoard(getStartingArray(props.size, props.instruments));
     });
     return () => {
       props.emitter.clearCallbacks("clear");
     };
-  }, [props.emitter, props.size]);
+  }, [props.emitter, props.size, props.instruments]);
 
   return (
     <div
@@ -33,18 +31,14 @@ export default function Board(props) {
       }}
     >
       {board.map((row, rowIdx) =>
-        row.map((val, colIdx) => {
+        row.map((noteProps, colIdx) => {
           return (
             <Button
+              {...noteProps}
               key={`button-${rowIdx}-${colIdx}`}
-              row={rowIdx}
-              column={colIdx}
               highlight={props.step === colIdx}
-              clicked={val.clicked}
               color={"Gray"}
-              idx={rowIdx * size + colIdx}
               onClick={() => {
-                Player.play(rowIdx, colIdx);
                 const clone = [...board];
                 clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx].clicked;
                 setBoard(clone);

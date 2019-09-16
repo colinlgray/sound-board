@@ -6,11 +6,11 @@ export default function Button(props) {
   // Play note when selected
   useEffect(() => {
     if (props.highlight && props.clicked) {
-      Player.play(props.row, props.column);
+      Player.play(props.instrument, props.note);
     }
-  }, [props.highlight, props.clicked, props.row, props.column]);
+  }, [props.highlight, props.clicked, props.instrument, props.note]);
   let classes = clsx(
-    "w-10 h-10 rounded cursor-pointer",
+    "w-10 h-10 rounded cursor-pointer flex items-center justify-center",
     {
       [`bg-${props.color.toLowerCase()}-400`]: props.highlight || props.clicked
     },
@@ -21,10 +21,14 @@ export default function Button(props) {
   );
   return (
     <div
-      style={{ transition: "background-color 400ms ease" }}
+      style={{ transition: "background-color 400ms ease", textAlign: "center" }}
       className={classes}
       key={`button-${props.row}-${props.column}`}
-      onClick={props.onClick}
-    ></div>
+      onClick={() => {
+        props.onClick();
+      }}
+    >
+      {props.note}
+    </div>
   );
 }
