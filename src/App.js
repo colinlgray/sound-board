@@ -7,18 +7,30 @@ const initialStep = -1;
 const size = 8;
 function App() {
   const [step, setStep] = useState(initialStep);
-  const [resetCount, setResetCount] = useState(8);
-  const refContainer = useRef(step);
+  const stepContainer = useRef(step);
+  const callbackContainer = useRef([]);
+
+  const emitter = {
+    addEventListener: (event, fn) => {
+      if (!callbackContainer.current[event]) {
+        callbackContainer.current[event] = [];
+      }
+      callbackContainer.current.push(fn);
+    },
+    clearCallbacks: event => {
+      callbackContainer.current[event] = [];
+    }
+  };
 
   const tick = () => {
     let newVal;
-    if (refContainer.current + 1 < size) {
-      newVal = refContainer.current + 1;
+    if (stepContainer.current + 1 < size) {
+      newVal = stepContainer.current + 1;
     } else {
       newVal = 0;
     }
-    refContainer.current = newVal;
-    setStep(refContainer.current);
+    stepContainer.current = newVal;
+    setStep(stepContainer.current);
   };
 
   useEffect(() => {
@@ -41,7 +53,7 @@ function App() {
           onClick={() => {
             Player.stopLoop();
 
-            refContainer.current = initialStep;
+            stepContainer.current = initialStep;
             setStep(initialStep);
           }}
         >
@@ -50,14 +62,14 @@ function App() {
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2"
           onClick={() => {
-            setResetCount(resetCount + 1);
+            callbackContainer.current.forEach(fn => fn());
           }}
         >
           Clear
         </button>
       </div>
       <div className="p-4">
-        <Board size={size} step={step} resetCount={resetCount} />
+        <Board size={size} step={step} emitter={emitter} />
       </div>
     </div>
   );

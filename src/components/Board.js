@@ -15,10 +15,13 @@ export default function Board(props) {
   const [board, setBoard] = useState(getStartingArray(size));
 
   useEffect(() => {
-    if (props.resetCount > 0) {
+    props.emitter.addEventListener("clear", () => {
       setBoard(getStartingArray(props.size));
-    }
-  }, [props.resetCount, props.size]);
+    });
+    return () => {
+      props.emitter.clearCallbacks("clear");
+    };
+  }, [props.emitter, props.size]);
 
   return (
     <div
