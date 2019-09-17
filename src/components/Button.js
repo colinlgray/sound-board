@@ -25,6 +25,7 @@ export default function Button(props) {
       className={classes}
       key={`button-${props.row}-${props.column}`}
       onClick={() => {
+        Player.play(props.instrument, props.note);
         props.onClick();
       }}
     >

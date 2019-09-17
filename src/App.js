@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Board from "./components/Board";
+import Keyboard from "./components/Keyboard";
 import Player from "./utils/Player";
 import "./styles/tailwind.css";
 
@@ -72,6 +73,9 @@ function App() {
       </div>
       <div className="p-4">
         <Board size={size} step={step} emitter={emitter} instruments={rows} />
+      </div>
+      <div className="p-4">
+        <Keyboard />
       </div>
     </div>
   );

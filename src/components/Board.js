@@ -25,7 +25,7 @@ export default function Board(props) {
     <div
       style={{
         gridTemplateColumns: `repeat(${size}, 1fr)`,
-        gridTemplateRows: `repeat(${size}, 1fr)`,
+        gridTemplateRows: `repeat(${props.instruments.length}, 1fr)`,
         display: "grid",
         gridGap: "8px"
       }}
