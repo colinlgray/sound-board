@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import clsx from "clsx";
 import "./Keyboard.css";
-import Player from "../utils/Player";
+import { synth } from "../utils/Player";
 
 const keys = {
   a: { color: "white", note: "C4" },
@@ -48,16 +48,30 @@ function Key(props) {
     />
   );
 }
-
 export default function Keyboard() {
+  const prevKeyContainer = useRef("");
+  const pressedKeysContainer = useRef({});
   useEffect(() => {
-    const listener = window.addEventListener("keydown", e => {
-      if (e.key && keys[e.key]) {
-        Player.play("Synth", keys[e.key].note);
+    const downListener = e => {
+      if (!keys[e.key]) return;
+      if (!pressedKeysContainer.current[e.key]) {
+        synth.triggerAttack(keys[e.key].note);
+        pressedKeysContainer.current[e.key] = true;
+        prevKeyContainer.current = e.key;
       }
-    });
+    };
+    const upListener = e => {
+      if (!keys[e.key]) return;
+      pressedKeysContainer.current[e.key] = false;
+      if (prevKeyContainer.current) {
+        synth.triggerRelease();
+      }
+    };
+    window.addEventListener("keydown", downListener);
+    window.addEventListener("keyup", upListener);
     return () => {
-      window.removeEventListener("keydown", listener);
+      window.removeEventListener("keydown", downListener);
+      window.removeEventListener("keydown", upListener);
     };
   }, []);
 
@@ -68,7 +82,7 @@ export default function Keyboard() {
           color={keys[shortCut].color}
           key={idx}
           onClick={() => {
-            Player.play("Synth", keys[shortCut].note);
+            synth.triggerAttackRelease(keys[shortCut].note);
           }}
         />
       ))}

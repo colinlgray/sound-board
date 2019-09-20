@@ -6,7 +6,7 @@ import "./styles/tailwind.css";
 
 const initialStep = -1;
 const size = 8;
-const initialRows = [{ instrument: "Synth", note: "F4" }];
+const initialRows = [{ instrument: "synth", note: "F4" }];
 function App() {
   const [step, setStep] = useState(initialStep);
   const [rows] = useState(initialRows);

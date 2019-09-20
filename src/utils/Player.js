@@ -1,16 +1,14 @@
 import Tone from "tone";
 
-let synth = null;
+export const synth = new Tone.Synth().toMaster();
+export const instruments = { synth };
 
-const changeInstrument = val => {
-  synth = new Tone[val]().toMaster();
-};
-
-const play = (instrument, note) => {
-  if (synth === null) {
-    changeInstrument("Synth");
+const play = (instrument, note, ...rest) => {
+  if (!instruments[instrument]) {
+    console.error(`Unable to find instrument ${instrument}`);
+    return;
   }
-  synth.triggerAttackRelease(note, "8n");
+  instruments[instrument].triggerAttackRelease(note, ...rest);
 };
 
 let callback = () => {};
@@ -30,9 +28,9 @@ const stopLoop = () => {
 };
 
 export default {
-  changeInstrument,
   startLoop,
   stopLoop,
   createLoop,
+  instruments,
   play
 };
