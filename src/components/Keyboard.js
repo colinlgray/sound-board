@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import clsx from "clsx";
 import "./Keyboard.css";
-import { synth } from "../utils/Player";
+import { attack as pAttack, release as pRelease } from "../utils/Player";
 
 const keys = {
   a: { color: "white", note: "C4" },
@@ -31,60 +31,73 @@ const keys = {
 };
 
 const classes = {
-  white: "h-40 z-0 bg-gray-100 key-white",
-  black: "h-20 z-10 bg-gray-800 key-black"
+  white: "h-40 z-0 key-white",
+  black: "h-20 z-10 key-black"
 };
 
 function Key(props) {
-  return (
-    <div
-      className={clsx(
-        "border-2 border-gray w-8 -ml-4",
-        props.className,
-        classes[props.color]
-      )}
-      role="button"
-      onClick={props.onClick}
-    />
-  );
-}
-export default function Keyboard() {
-  const prevKeyContainer = useRef("");
-  const pressedKeysContainer = useRef({});
+  const [hightlight, setHighlight] = useState(false);
+  const pressedContainer = useRef(false);
+
+  const attack = useCallback(() => {
+    setHighlight(true);
+    pressedContainer.current = true;
+    pAttack("synth", keys[props.shortcut].note);
+  }, [props.shortcut]);
+  const release = () => {
+    setHighlight(false);
+    pressedContainer.current = false;
+    pRelease("synth");
+  };
+
   useEffect(() => {
     const downListener = e => {
-      if (!keys[e.key]) return;
-      if (!pressedKeysContainer.current[e.key]) {
-        synth.triggerAttack(keys[e.key].note);
-        pressedKeysContainer.current[e.key] = true;
-        prevKeyContainer.current = e.key;
-      }
+      if (e.key !== props.shortcut || pressedContainer.current) return;
+      attack();
     };
     const upListener = e => {
-      if (!keys[e.key]) return;
-      pressedKeysContainer.current[e.key] = false;
-      if (prevKeyContainer.current) {
-        synth.triggerRelease();
-      }
+      if (
+        e.key.toLowerCase() !== props.shortcut.toLowerCase() ||
+        !pressedContainer.current
+      )
+        return;
+      release();
     };
+
     window.addEventListener("keydown", downListener);
     window.addEventListener("keyup", upListener);
     return () => {
       window.removeEventListener("keydown", downListener);
       window.removeEventListener("keydown", upListener);
     };
-  }, []);
+  }, [props.shortcut, attack]);
 
   return (
+    <div
+      className={clsx(
+        "border-2 border-gray w-8 -ml-4",
+        props.className,
+        { "bg-gray-100": props.color === "white" && !hightlight },
+        { "bg-gray-800": props.color === "black" && !hightlight },
+        { "bg-gray-200": props.color === "white" && hightlight },
+        { "bg-gray-700": props.color === "black" && hightlight },
+        classes[props.color]
+      )}
+      onMouseDown={() => {
+        attack(keys[props.shortcut]);
+      }}
+      onMouseUp={release}
+      onMouseLeave={release}
+      role="button"
+      onClick={props.onClick}
+    />
+  );
+}
+export default function Keyboard() {
+  return (
     <div className="flex">
-      {Object.keys(keys).map((shortCut, idx) => (
-        <Key
-          color={keys[shortCut].color}
-          key={idx}
-          onClick={() => {
-            synth.triggerAttackRelease(keys[shortCut].note);
-          }}
-        />
+      {Object.keys(keys).map((shortcut, idx) => (
+        <Key color={keys[shortcut].color} key={idx} shortcut={shortcut} />
       ))}
     </div>
   );

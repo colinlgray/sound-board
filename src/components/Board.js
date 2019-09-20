@@ -9,9 +9,11 @@ const getStartingArray = (size, instruments) => {
   });
 };
 
+const initialRows = [{ instrument: "mSynth", note: "" }];
+
 export default function Board(props) {
   const { size } = props;
-  const [board, setBoard] = useState(getStartingArray(size, props.instruments));
+  const [board, setBoard] = useState(getStartingArray(size, initialRows));
   useEffect(() => {
     props.emitter.addEventListener("clear", () => {
       setBoard(getStartingArray(props.size, props.instruments));
@@ -25,7 +27,7 @@ export default function Board(props) {
     <div
       style={{
         gridTemplateColumns: `repeat(${size}, 1fr)`,
-        gridTemplateRows: `repeat(${props.instruments.length}, 1fr)`,
+        gridTemplateRows: `repeat(${board.length}, 1fr)`,
         display: "grid",
         gridGap: "8px"
       }}
@@ -38,6 +40,7 @@ export default function Board(props) {
               key={`button-${rowIdx}-${colIdx}`}
               highlight={props.step === colIdx}
               color={"Gray"}
+              time={row.length}
               onClick={() => {
                 const clone = [...board];
                 clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx].clicked;
