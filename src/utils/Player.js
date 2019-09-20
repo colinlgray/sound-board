@@ -7,7 +7,6 @@ const changeInstrument = val => {
 };
 
 const play = (instrument, note) => {
-  console.log("play", instrument, note);
   if (synth === null) {
     changeInstrument("Synth");
   }
