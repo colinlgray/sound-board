@@ -2,8 +2,8 @@ import Tone from "tone";
 import { without } from "lodash";
 
 export const synth = new Tone.Synth().toMaster();
-export const mSynth = new Tone.MembraneSynth().toMaster();
-export const instruments = { synth, mSynth };
+export const loopSynth = new Tone.Synth().toMaster();
+export const instruments = { synth, loopSynth };
 
 let evtCallbacks = [];
 

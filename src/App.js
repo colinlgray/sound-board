@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Board from "./components/Board";
 import Keyboard from "./components/Keyboard";
 import Player from "./utils/Player";
+import { without } from "lodash";
 import "./styles/tailwind.css";
 
 const initialStep = -1;
@@ -9,17 +10,20 @@ const size = 8;
 function App() {
   const [step, setStep] = useState(initialStep);
   const stepContainer = useRef(step);
-  const callbackContainer = useRef([]);
+  const callbackContainer = useRef({ clear: [] });
 
   const emitter = {
     addEventListener: (event, fn) => {
       if (!callbackContainer.current[event]) {
         callbackContainer.current[event] = [];
       }
-      callbackContainer.current.push(fn);
+      callbackContainer.current[event].push(fn);
     },
-    clearCallbacks: event => {
-      callbackContainer.current[event] = [];
+    removeEventListener: (event, fn) => {
+      callbackContainer.current[event] = without(
+        callbackContainer.current[event],
+        fn
+      );
     }
   };
 
@@ -63,7 +67,7 @@ function App() {
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2"
           onClick={() => {
-            callbackContainer.current.forEach(fn => fn());
+            callbackContainer.current.clear.forEach(fn => fn());
           }}
         >
           Clear

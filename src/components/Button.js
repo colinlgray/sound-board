@@ -1,10 +1,10 @@
 import React, { useEffect, useCallback } from "react";
 import clsx from "clsx";
-import { mSynth, addNoteListener, removeNoteListener } from "../utils/Player";
+import { loopSynth } from "../utils/Player";
 
 export default function Button(props) {
   const playNote = useCallback(() => {
-    mSynth.triggerAttackRelease(props.note, `${props.time}n`);
+    loopSynth.triggerAttackRelease(props.note, `${props.time}n`);
   }, [props.note, props.time]);
 
   // Play note when selected
@@ -13,43 +13,23 @@ export default function Button(props) {
       playNote();
     }
   }, [props.highlight, props.clicked, playNote]);
-  const lookForEvt = useCallback(
-    note => {
-      if (props.highlight) {
-        // TODO: Set value when highlighted
-        // Currently the props.highlight is wrong
-        console.log("set to", props.note);
-      }
-    },
-    [props.note, props.highlight]
-  );
-
-  useEffect(() => {
-    addNoteListener(lookForEvt);
-    return () => {
-      removeNoteListener(lookForEvt);
-    };
-  }, [props.note, lookForEvt]);
-
-  let classes = clsx(
-    "w-10 h-10 rounded cursor-pointer flex items-center justify-center",
-    {
-      [`bg-${props.color.toLowerCase()}-400`]: props.highlight || props.clicked
-    },
-    {
-      [`bg-${props.color.toLowerCase()}-700`]:
-        !props.highlight && !props.clicked
-    }
-  );
+  const recording = props.clicked && !props.note;
+  const color = recording ? "red" : "gray";
+  let colorWeight = 700;
+  if (recording) {
+    colorWeight = 800;
+  } else if (props.highlight && props.clicked) {
+    colorWeight = 300;
+  } else if (props.highlight || props.clicked) {
+    colorWeight = 400;
+  }
+  let classes = `w-10 h-10 rounded cursor-pointer flex items-center justify-center bg-${color}-${colorWeight}`;
   return (
     <div
       style={{ transition: "background-color 400ms ease", textAlign: "center" }}
       className={classes}
       key={`button-${props.row}-${props.column}`}
-      onClick={() => {
-        playNote();
-        props.onClick();
-      }}
+      onClick={props.onClick}
     >
       {props.note}
     </div>

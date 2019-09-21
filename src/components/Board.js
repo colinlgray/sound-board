@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Button from "./Button";
+import { map } from "lodash";
+import { addNoteListener, removeNoteListener } from "../utils/Player";
 
 const getStartingArray = (size, instruments) => {
   return new Array(instruments.length).fill(0).map((_, idx) => {
@@ -9,19 +11,49 @@ const getStartingArray = (size, instruments) => {
   });
 };
 
-const initialRows = [{ instrument: "mSynth", note: "" }];
+const initialRows = [{ note: "" }];
 
 export default function Board(props) {
   const { size } = props;
   const [board, setBoard] = useState(getStartingArray(size, initialRows));
   useEffect(() => {
-    props.emitter.addEventListener("clear", () => {
-      setBoard(getStartingArray(props.size, props.instruments));
-    });
-    return () => {
-      props.emitter.clearCallbacks("clear");
+    const clear = () => {
+      const clone = map(board, row => {
+        return map(row, val => {
+          val.note = "";
+          val.clicked = false;
+          return { ...val, note: "", clicked: false };
+        });
+      });
+      setBoard(clone);
     };
-  }, [props.emitter, props.size, props.instruments]);
+    props.emitter.addEventListener("clear", clear);
+    return () => {
+      props.emitter.removeEventListener("clear", clear);
+    };
+  }, [props.emitter, props.size, board]);
+
+  const lookForEvt = useCallback(
+    note => {
+      board.forEach((row, rowIdx) => {
+        row.forEach((el, colIdx) => {
+          if (el.clicked && !el.note) {
+            const clone = [...board];
+            clone[rowIdx][colIdx].note = note;
+            setBoard(clone);
+          }
+        });
+      });
+    },
+    [board]
+  );
+
+  useEffect(() => {
+    addNoteListener(lookForEvt);
+    return () => {
+      removeNoteListener(lookForEvt);
+    };
+  }, [props.note, lookForEvt]);
 
   return (
     <div
@@ -39,11 +71,11 @@ export default function Board(props) {
               {...noteProps}
               key={`button-${rowIdx}-${colIdx}`}
               highlight={props.step === colIdx}
-              color={"Gray"}
               time={row.length}
               onClick={() => {
                 const clone = [...board];
                 clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx].clicked;
+                clone[rowIdx][colIdx].note = "";
                 setBoard(clone);
               }}
             />
