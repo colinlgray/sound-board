@@ -1,10 +1,8 @@
 import React, { useEffect, useCallback } from "react";
-import clsx from "clsx";
-import { loopSynth } from "../utils/Player";
 
 export default function Button(props) {
   const playNote = useCallback(() => {
-    loopSynth.triggerAttackRelease(props.note, `${props.time}n`);
+    console.log("TODO: play note", props.note, props.time);
   }, [props.note, props.time]);
 
   // Play note when selected

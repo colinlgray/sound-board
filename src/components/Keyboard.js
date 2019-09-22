@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import clsx from "clsx";
 import "./Keyboard.css";
-import { attack as pAttack, release as pRelease } from "../utils/Player";
+import Player from "../utils/Player";
 
 const keys = {
   a: { color: "white", note: "C4" },
@@ -38,16 +38,19 @@ const classes = {
 function Key(props) {
   const [hightlight, setHighlight] = useState(false);
   const pressedContainer = useRef(false);
-
+  let player = useRef();
+  useEffect(() => {
+    player.current = new Player();
+  }, []);
   const attack = useCallback(() => {
     setHighlight(true);
     pressedContainer.current = true;
-    pAttack("synth", keys[props.shortcut].note);
-  }, [props.shortcut]);
+    player.current.attack(keys[props.shortcut].note);
+  }, [props.shortcut, player]);
   const release = () => {
     setHighlight(false);
     pressedContainer.current = false;
-    pRelease("synth");
+    player.current.release();
   };
 
   useEffect(() => {

@@ -11,6 +11,7 @@ function App() {
   const [step, setStep] = useState(initialStep);
   const stepContainer = useRef(step);
   const callbackContainer = useRef({ clear: [] });
+  const playerContainer = useRef();
 
   const emitter = {
     addEventListener: (event, fn) => {
@@ -39,7 +40,8 @@ function App() {
   };
 
   useEffect(() => {
-    Player.createLoop(tick);
+    playerContainer.current = new Player();
+    playerContainer.current.createLoop(tick);
   }, []);
 
   return (
@@ -48,7 +50,7 @@ function App() {
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2"
           onClick={() => {
-            Player.startLoop();
+            playerContainer.current.constructor.startLoop();
           }}
         >
           Start
@@ -56,7 +58,7 @@ function App() {
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2"
           onClick={() => {
-            Player.stopLoop();
+            playerContainer.current.stopLoop();
 
             stepContainer.current = initialStep;
             setStep(initialStep);

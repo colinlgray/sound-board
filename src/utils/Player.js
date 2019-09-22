@@ -1,22 +1,7 @@
 import Tone from "tone";
 import { without } from "lodash";
 
-export const synth = new Tone.Synth().toMaster();
-export const loopSynth = new Tone.Synth().toMaster();
-export const instruments = { synth, loopSynth };
-
 let evtCallbacks = [];
-
-export const attack = (instrument, note, ...rest) => {
-  evtCallbacks.forEach(fn => {
-    fn(note);
-  });
-
-  instruments[instrument].triggerAttack(note, ...rest);
-};
-export const release = (instrument, ...rest) => {
-  instruments[instrument].triggerRelease(...rest);
-};
 
 export const addNoteListener = cb => {
   evtCallbacks.push(cb);
@@ -24,25 +9,33 @@ export const addNoteListener = cb => {
 export const removeNoteListener = cb => {
   evtCallbacks = without(evtCallbacks, cb);
 };
-let loopCallback = () => {};
 
-const createLoop = fn => {
-  loopCallback = fn;
-  new Tone.Loop(loopCallback, "8n").start(0);
-};
+export default class Player {
+  constructor() {
+    this.loopCallback = () => {};
+    this.instrument = new Tone.Synth().toMaster();
+  }
+  createLoop(fn) {
+    this.loopCallback = fn;
+    new Tone.Loop(this.loopCallback, "8n").start(0);
+  }
 
-const startLoop = fn => {
-  Tone.Transport.start();
-};
+  static startLoop() {
+    Tone.Transport.start();
+  }
 
-const stopLoop = () => {
-  Tone.Transport.stop();
-  loopCallback = () => {};
-};
+  stopLoop() {
+    Tone.Transport.stop();
+    this.loopCallback = () => {};
+  }
 
-export default {
-  startLoop,
-  stopLoop,
-  createLoop,
-  instruments
-};
+  attack(note, ...rest) {
+    // TODO: Implement event listener
+    this.instrument.triggerAttack(note, ...rest);
+  }
+
+  release() {
+    // TODO: Implement event listener
+    this.instrument.triggerRelease();
+  }
+}
