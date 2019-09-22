@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import Tone from "tone";
 import { without } from "lodash";
 
@@ -11,9 +12,13 @@ export const removeNoteListener = cb => {
 };
 
 export default class Player {
-  constructor() {
+  constructor(count) {
     this.loopCallback = () => {};
-    this.instrument = new Tone.Synth().toMaster();
+    if (!count || count === 1) {
+      this.instrument = new Tone.Synth().toMaster();
+    } else {
+      this.instrument = new Tone.PolySynth(count, Tone.Synth).toMaster();
+    }
   }
   createLoop(fn) {
     this.loopCallback = fn;
@@ -34,8 +39,17 @@ export default class Player {
     this.instrument.triggerAttack(note, ...rest);
   }
 
-  release() {
+  release(...rest) {
     // TODO: Implement event listener
-    this.instrument.triggerRelease();
+    this.instrument.triggerRelease(...rest);
   }
+}
+
+export function usePlayer(count) {
+  const player = useRef();
+  useEffect(() => {
+    player.current = new Player(count);
+  }, [count]);
+
+  return player;
 }

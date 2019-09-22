@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import clsx from "clsx";
 import "./Keyboard.css";
-import Player from "../utils/Player";
+import { usePlayer } from "../utils/Player";
 
 const keys = {
   a: { color: "white", note: "C4" },
@@ -38,20 +38,16 @@ const classes = {
 function Key(props) {
   const [hightlight, setHighlight] = useState(false);
   const pressedContainer = useRef(false);
-  let player = useRef();
-  useEffect(() => {
-    player.current = new Player();
-  }, []);
   const attack = useCallback(() => {
     setHighlight(true);
     pressedContainer.current = true;
-    player.current.attack(keys[props.shortcut].note);
-  }, [props.shortcut, player]);
-  const release = () => {
+    props.onAttack();
+  }, [props]);
+  const release = useCallback(() => {
     setHighlight(false);
     pressedContainer.current = false;
-    player.current.release();
-  };
+    props.onRelease();
+  }, [props]);
 
   useEffect(() => {
     const downListener = e => {
@@ -73,7 +69,7 @@ function Key(props) {
       window.removeEventListener("keydown", downListener);
       window.removeEventListener("keydown", upListener);
     };
-  }, [props.shortcut, attack]);
+  }, [props.shortcut, release, attack]);
 
   return (
     <div
@@ -86,21 +82,29 @@ function Key(props) {
         { "bg-gray-700": props.color === "black" && hightlight },
         classes[props.color]
       )}
-      onMouseDown={() => {
-        attack(keys[props.shortcut]);
-      }}
+      onMouseDown={attack}
       onMouseUp={release}
       onMouseLeave={release}
       role="button"
-      onClick={props.onClick}
     />
   );
 }
 export default function Keyboard() {
+  const player = usePlayer(Object.keys(keys).length);
   return (
     <div className="flex">
       {Object.keys(keys).map((shortcut, idx) => (
-        <Key color={keys[shortcut].color} key={idx} shortcut={shortcut} />
+        <Key
+          color={keys[shortcut].color}
+          key={idx}
+          shortcut={shortcut}
+          onAttack={() => {
+            player.current.attack(keys[shortcut].note);
+          }}
+          onRelease={() => {
+            player.current.release(keys[shortcut].note);
+          }}
+        />
       ))}
     </div>
   );
