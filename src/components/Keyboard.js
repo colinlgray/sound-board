@@ -38,11 +38,11 @@ const classes = {
 function Key(props) {
   useEffect(() => {
     const downListener = e => {
-      if (e.key !== props.shortcut || props.pressed) return;
+      if (e.key !== props.shortcut) return;
       props.onAttack();
     };
     const upListener = e => {
-      if (e.key.toLowerCase() !== props.shortcut.toLowerCase()) return;
+      if (e.key !== props.shortcut) return;
       props.onRelease();
     };
 
@@ -72,9 +72,22 @@ function Key(props) {
     />
   );
 }
+
 export default function Keyboard() {
   const [keyState, setKeyState] = useState(initialKeyState);
   const player = usePlayer(Object.keys(initialKeyState).length);
+  window.asd = player;
+  useEffect(() => {
+    const keys = keyState.reduce((memo, keyState) => {
+      if (keyState.pressed) {
+        return memo.concat(keyState.note);
+      }
+      return memo;
+    }, []);
+    if (keys.length > 0) {
+      player.current.attack(keys);
+    }
+  }, [keyState, player]);
   return (
     <div className="flex">
       {keyState.map((state, idx) => (
@@ -82,16 +95,19 @@ export default function Keyboard() {
           key={idx}
           hightlight={false}
           onAttack={() => {
-            const clone = [...keyState];
-            clone[idx].pressed = true;
-            setKeyState(clone);
-            player.current.attack(state.note);
+            if (!keyState[idx].pressed) {
+              const clone = [...keyState];
+              clone[idx].pressed = true;
+              setKeyState(clone);
+            }
           }}
           onRelease={() => {
-            const clone = [...keyState];
-            clone[idx].pressed = false;
-            setKeyState(clone);
-            player.current.release(state.note);
+            if (keyState[idx].pressed) {
+              const clone = [...keyState];
+              clone[idx].pressed = false;
+              setKeyState(clone);
+              player.current.release(state.note);
+            }
           }}
           {...state}
         />
