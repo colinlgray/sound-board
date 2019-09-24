@@ -76,7 +76,6 @@ function Key(props) {
 export default function Keyboard() {
   const [keyState, setKeyState] = useState(initialKeyState);
   const player = usePlayer(Object.keys(initialKeyState).length);
-  window.asd = player;
   useEffect(() => {
     const keys = keyState.reduce((memo, keyState) => {
       if (keyState.pressed) {

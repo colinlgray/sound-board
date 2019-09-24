@@ -1,16 +1,6 @@
-import React, { useEffect, useCallback } from "react";
+import React from "react";
 
 export default function Button(props) {
-  const playNote = useCallback(() => {
-    console.log("TODO: play note", props.note, props.time);
-  }, [props.note, props.time]);
-
-  // Play note when selected
-  useEffect(() => {
-    if (props.highlight && props.clicked) {
-      playNote();
-    }
-  }, [props.highlight, props.clicked, playNote]);
   const recording = props.clicked && !props.note;
   const color = recording ? "red" : "gray";
   let colorWeight = 700;
