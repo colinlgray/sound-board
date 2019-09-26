@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function Button(props) {
   const recording = props.clicked && !props.note;
   const color = recording ? "red" : "gray";
+
+  useEffect(() => {
+    if (props.highlight && props.clicked) {
+      props.playNote(props.notes, `${props.time}n`);
+    }
+  }, [props]);
+
   let colorWeight = 700;
   if (recording) {
     colorWeight = 800;
@@ -19,7 +26,7 @@ export default function Button(props) {
       key={`button-${props.row}-${props.column}`}
       onClick={props.onClick}
     >
-      {props.note}
+      {props.notes.join(",")}
     </div>
   );
 }

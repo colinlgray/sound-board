@@ -43,14 +43,22 @@ export default class Player {
     this.loopCallback = () => {};
   }
 
-  attack(note, ...rest) {
-    // TODO: Implement event listener
-    this.instrument.triggerAttack(note, ...rest);
+  attack(notes, ...rest) {
+    evtCallbacks.forEach(cb => {
+      cb(notes);
+    });
+    this.instrument.triggerAttack(notes, ...rest);
   }
 
   release(...rest) {
-    // TODO: Implement event listener
     this.instrument.triggerRelease(...rest);
+  }
+
+  attackRelease(notes, ...rest) {
+    evtCallbacks.forEach(cb => {
+      cb(notes);
+    });
+    this.instrument.triggerAttackRelease(notes, ...rest);
   }
 }
 

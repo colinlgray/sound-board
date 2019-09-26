@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Button from "./Button";
 import { map } from "lodash";
-import { addNoteListener, removeNoteListener } from "../utils/Player";
+import {
+  usePlayer,
+  addNoteListener,
+  removeNoteListener
+} from "../utils/Player";
 
 const getStartingArray = (size, instruments) => {
   return new Array(instruments.length).fill(0).map((_, idx) => {
@@ -11,18 +15,17 @@ const getStartingArray = (size, instruments) => {
   });
 };
 
-const initialRows = [{ note: "" }];
+const initialRows = [{ notes: [] }];
 
 export default function Board(props) {
   const { size } = props;
   const [board, setBoard] = useState(getStartingArray(size, initialRows));
+  const player = usePlayer(size);
   useEffect(() => {
     const clear = () => {
       const clone = map(board, row => {
         return map(row, val => {
-          val.note = "";
-          val.clicked = false;
-          return { ...val, note: "", clicked: false };
+          return { ...val, notes: [], clicked: false };
         });
       });
       setBoard(clone);
@@ -34,12 +37,12 @@ export default function Board(props) {
   }, [props.emitter, props.size, board]);
 
   const lookForEvt = useCallback(
-    note => {
+    notes => {
       board.forEach((row, rowIdx) => {
         row.forEach((el, colIdx) => {
-          if (el.clicked && !el.note) {
+          if (el.clicked && !el.notes.length) {
             const clone = [...board];
-            clone[rowIdx][colIdx].note = note;
+            clone[rowIdx][colIdx].notes = notes;
             setBoard(clone);
           }
         });
@@ -53,7 +56,7 @@ export default function Board(props) {
     return () => {
       removeNoteListener(lookForEvt);
     };
-  }, [props.note, lookForEvt]);
+  }, [lookForEvt]);
 
   return (
     <div
@@ -72,6 +75,9 @@ export default function Board(props) {
               key={`button-${rowIdx}-${colIdx}`}
               highlight={props.step === colIdx}
               time={row.length}
+              playNote={(...args) => {
+                player.current.attackRelease(...args);
+              }}
               onClick={() => {
                 const clone = [...board];
                 clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx].clicked;
