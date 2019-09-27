@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import Board from "./components/Board";
-import Keyboard from "./components/Keyboard";
 import FFT from "./components/FFT";
 import Player from "./utils/Player";
 import { without } from "lodash";
@@ -81,9 +80,6 @@ function App() {
       </div>
       <div className="p-4">
         <Board size={size} step={step} emitter={emitter} />
-      </div>
-      <div className="p-4">
-        <Keyboard />
       </div>
     </div>
   );

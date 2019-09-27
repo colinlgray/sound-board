@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Button from "./Button";
+import Keyboard from "./Keyboard";
 import { map } from "lodash";
-import {
-  usePlayer,
-  addNoteListener,
-  removeNoteListener
-} from "../utils/Player";
+import { usePlayer } from "../utils/Player";
 
 const getStartingArray = (size, instruments) => {
   return new Array(instruments.length).fill(0).map((_, idx) => {
@@ -38,6 +35,7 @@ export default function Board(props) {
 
   const lookForEvt = useCallback(
     notes => {
+      console.log("test", notes);
       board.forEach((row, rowIdx) => {
         row.forEach((el, colIdx) => {
           if (el.clicked && !el.notes.length) {
@@ -51,43 +49,44 @@ export default function Board(props) {
     [board]
   );
 
-  useEffect(() => {
-    addNoteListener(lookForEvt);
-    return () => {
-      removeNoteListener(lookForEvt);
-    };
-  }, [lookForEvt]);
-
   return (
-    <div
-      style={{
-        gridTemplateColumns: `repeat(${size}, 1fr)`,
-        gridTemplateRows: `repeat(${board.length}, 1fr)`,
-        display: "grid",
-        gridGap: "8px"
-      }}
-    >
-      {board.map((row, rowIdx) =>
-        row.map((noteProps, colIdx) => {
-          return (
-            <Button
-              {...noteProps}
-              key={`button-${rowIdx}-${colIdx}`}
-              highlight={props.step === colIdx}
-              time={row.length}
-              playNote={(...args) => {
-                player.current.attackRelease(...args);
-              }}
-              onClick={() => {
-                const clone = [...board];
-                clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx].clicked;
-                clone[rowIdx][colIdx].note = "";
-                setBoard(clone);
-              }}
-            />
-          );
-        })
-      )}
-    </div>
+    <>
+      <div className="p-4">
+        <div
+          style={{
+            gridTemplateColumns: `repeat(${size}, 1fr)`,
+            gridTemplateRows: `repeat(${board.length}, 1fr)`,
+            display: "grid",
+            gridGap: "8px"
+          }}
+        >
+          {board.map((row, rowIdx) =>
+            row.map((noteProps, colIdx) => {
+              return (
+                <Button
+                  {...noteProps}
+                  key={`button-${rowIdx}-${colIdx}`}
+                  highlight={props.step === colIdx}
+                  time={row.length}
+                  playNote={(...args) => {
+                    player.current.attackRelease(...args);
+                  }}
+                  onClick={() => {
+                    const clone = [...board];
+                    clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx]
+                      .clicked;
+                    clone[rowIdx][colIdx].notes = [];
+                    setBoard(clone);
+                  }}
+                />
+              );
+            })
+          )}
+        </div>
+      </div>
+      <div className="p-4">
+        <Keyboard onClick={lookForEvt} />
+      </div>
+    </>
   );
 }

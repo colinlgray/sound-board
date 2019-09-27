@@ -73,7 +73,7 @@ function Key(props) {
   );
 }
 
-export default function Keyboard() {
+export default function Keyboard({ onClick }) {
   const [keyState, setKeyState] = useState(initialKeyState);
   const player = usePlayer(Object.keys(initialKeyState).length);
   useEffect(() => {
@@ -84,9 +84,10 @@ export default function Keyboard() {
       return memo;
     }, []);
     if (keys.length > 0) {
+      onClick(keys);
       player.current.attack(keys);
     }
-  }, [keyState, player]);
+  }, [keyState, player, onClick]);
   return (
     <div className="flex">
       {keyState.map((state, idx) => (
