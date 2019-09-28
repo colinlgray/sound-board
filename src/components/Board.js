@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Button from "./Button";
 import Keyboard from "./Keyboard";
+import Dropdown from "./Dropdown";
 import { map } from "lodash";
 import { usePlayer } from "../utils/Player";
 
@@ -35,7 +36,6 @@ export default function Board(props) {
 
   const lookForEvt = useCallback(
     notes => {
-      console.log("test", notes);
       board.forEach((row, rowIdx) => {
         row.forEach((el, colIdx) => {
           if (el.clicked && !el.notes.length) {
@@ -51,7 +51,7 @@ export default function Board(props) {
 
   return (
     <>
-      <div className="p-4">
+      <div className="p-4 flex">
         <div
           style={{
             gridTemplateColumns: `repeat(${size}, 1fr)`,
@@ -83,6 +83,12 @@ export default function Board(props) {
             })
           )}
         </div>
+        <Dropdown
+          options={[4, 8, 16]}
+          onChange={val => {
+            console.log("Set time to ", val);
+          }}
+        />
       </div>
       <div className="p-4">
         <Keyboard onClick={lookForEvt} />
