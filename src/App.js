@@ -6,7 +6,7 @@ import { without } from "lodash";
 import "./styles/tailwind.css";
 
 const initialStep = -1;
-const size = 8;
+const maxSize = 16;
 function App() {
   const [step, setStep] = useState(initialStep);
   const stepContainer = useRef(step);
@@ -30,7 +30,7 @@ function App() {
 
   const tick = () => {
     let newVal;
-    if (stepContainer.current + 1 < size) {
+    if (stepContainer.current + 1 < maxSize) {
       newVal = stepContainer.current + 1;
     } else {
       newVal = 0;
@@ -78,8 +78,8 @@ function App() {
           Clear
         </button>
       </div>
-      <div className="p-4">
-        <Board size={size} step={step} emitter={emitter} />
+      <div className="">
+        <Board maxSize={maxSize} step={step} emitter={emitter} />
       </div>
     </div>
   );

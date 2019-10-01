@@ -18,7 +18,7 @@ export default function Button(props) {
   } else if (props.highlight || props.clicked) {
     colorWeight = 400;
   }
-  let classes = `w-10 h-10 rounded cursor-pointer flex items-center justify-center bg-${color}-${colorWeight}`;
+  let classes = `m-1 w-full h-full rounded cursor-pointer flex items-center justify-center bg-${color}-${colorWeight}`;
   return (
     <div
       style={{ transition: "background-color 400ms ease", textAlign: "center" }}

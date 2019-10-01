@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Button from "./Button";
+import Row from "./Row";
 import Keyboard from "./Keyboard";
-import Dropdown from "./Dropdown";
 import { map } from "lodash";
-import { usePlayer } from "../utils/Player";
 
 const getStartingArray = (size, instruments) => {
   return new Array(instruments.length).fill(0).map((_, idx) => {
@@ -16,9 +14,8 @@ const getStartingArray = (size, instruments) => {
 const initialRows = [{ notes: [] }];
 
 export default function Board(props) {
-  const { size } = props;
-  const [board, setBoard] = useState(getStartingArray(size, initialRows));
-  const player = usePlayer(size);
+  const { maxSize } = props;
+  const [board, setBoard] = useState(getStartingArray(maxSize, initialRows));
   useEffect(() => {
     const clear = () => {
       const clone = map(board, row => {
@@ -51,46 +48,28 @@ export default function Board(props) {
 
   return (
     <>
-      <div className="p-4 flex">
-        <div
-          style={{
-            gridTemplateColumns: `repeat(${size}, 1fr)`,
-            gridTemplateRows: `repeat(${board.length}, 1fr)`,
-            display: "grid",
-            gridGap: "8px"
-          }}
-        >
-          {board.map((row, rowIdx) =>
-            row.map((noteProps, colIdx) => {
-              return (
-                <Button
-                  {...noteProps}
-                  key={`button-${rowIdx}-${colIdx}`}
-                  highlight={props.step === colIdx}
-                  time={row.length}
-                  playNote={(...args) => {
-                    player.current.attackRelease(...args);
-                  }}
-                  onClick={() => {
-                    const clone = [...board];
-                    clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx]
-                      .clicked;
-                    clone[rowIdx][colIdx].notes = [];
-                    setBoard(clone);
-                  }}
-                />
-              );
-            })
-          )}
+      <div className="flex items-center content-center w-full">
+        <div className="p-4 w-full">
+          <div className="flex w-full h-8">
+            {board.map((rowData, rowIdx) => (
+              <Row
+                rowData={rowData}
+                maxSize={maxSize}
+                step={props.step}
+                key={rowIdx}
+                onClick={colIdx => {
+                  const clone = [...board];
+                  clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx]
+                    .clicked;
+                  clone[rowIdx][colIdx].notes = [];
+                  setBoard(clone);
+                }}
+              />
+            ))}
+          </div>
         </div>
-        <Dropdown
-          options={[4, 8, 16]}
-          onChange={val => {
-            console.log("Set time to ", val);
-          }}
-        />
       </div>
-      <div className="p-4">
+      <div className="p-4 w-full justify-center">
         <Keyboard onClick={lookForEvt} />
       </div>
     </>

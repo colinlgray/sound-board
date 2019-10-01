@@ -89,7 +89,7 @@ export default function Keyboard({ onClick }) {
     }
   }, [keyState, player, onClick]);
   return (
-    <div className="flex">
+    <div className="flex justify-center w-full p-4">
       {keyState.map((state, idx) => (
         <Key
           key={idx}

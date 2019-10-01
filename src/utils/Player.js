@@ -31,7 +31,7 @@ export default class Player {
   }
   createLoop(fn) {
     this.loopCallback = fn;
-    new Tone.Loop(this.loopCallback, "8n").start(0);
+    new Tone.Loop(this.loopCallback, "16n").start(0);
   }
 
   static startLoop() {
