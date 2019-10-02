@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 
 export default function Button(props) {
+  const { highlight, clicked, notes, time, playNote } = props;
   const recording = props.clicked && !props.note;
   const color = recording ? "red" : "gray";
-
   useEffect(() => {
-    if (props.highlight && props.clicked) {
-      props.playNote(props.notes, `${props.time}n`);
+    if (highlight && clicked) {
+      playNote(notes, `${time}n`);
     }
-  }, [props]);
+  }, [highlight, clicked, notes, time, playNote]);
 
   let colorWeight = 700;
   if (recording) {
