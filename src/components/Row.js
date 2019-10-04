@@ -35,9 +35,8 @@ export default function Row(props) {
     );
   }
   return (
-    <>
+    <div className="flex w-full h-full m-2">
       {els}
-
       <Dropdown
         options={[4, 8, 16]}
         value={size}
@@ -45,6 +44,6 @@ export default function Row(props) {
           setSize(val);
         }}
       />
-    </>
+    </div>
   );
 }

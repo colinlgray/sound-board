@@ -79,9 +79,7 @@ function App() {
           Clear
         </button>
       </div>
-      <div className="">
-        <Board maxSize={maxSize} step={step} emitter={emitter} />
-      </div>
+      <Board maxSize={maxSize} step={step} emitter={emitter} />
     </div>
   );
 }

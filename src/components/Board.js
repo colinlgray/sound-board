@@ -11,7 +11,7 @@ const getStartingArray = (size, instruments) => {
   });
 };
 
-const initialRows = [{ notes: [] }];
+const initialRows = [{ notes: [] }, { notes: [] }];
 
 export default function Board(props) {
   const { maxSize } = props;
@@ -47,31 +47,28 @@ export default function Board(props) {
   );
 
   return (
-    <>
-      <div className="flex items-center content-center w-full">
-        <div className="p-4 w-full">
-          <div className="flex w-full h-8">
-            {board.map((rowData, rowIdx) => (
-              <Row
-                rowData={rowData}
-                maxSize={maxSize}
-                step={props.step}
-                key={rowIdx}
-                onClick={colIdx => {
-                  const clone = [...board];
-                  clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx]
-                    .clicked;
-                  clone[rowIdx][colIdx].notes = [];
-                  setBoard(clone);
-                }}
-              />
-            ))}
-          </div>
+    <div>
+      <div className="flex  w-full">
+        <div className="flex h-auto m-2 w-full flex-col">
+          {board.map((rowData, rowIdx) => (
+            <Row
+              rowData={rowData}
+              maxSize={maxSize}
+              step={props.step}
+              key={rowIdx}
+              onClick={colIdx => {
+                const clone = [...board];
+                clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx].clicked;
+                clone[rowIdx][colIdx].notes = [];
+                setBoard(clone);
+              }}
+            />
+          ))}
         </div>
       </div>
       <div className="p-4 w-full justify-center">
         <Keyboard onClick={lookForEvt} />
       </div>
-    </>
+    </div>
   );
 }
