@@ -14,6 +14,7 @@ export const removeNoteListener = cb => {
 export const meter = new Tone.Meter("level");
 export const fft = new Tone.Analyser("fft", 64);
 export const waveform = new Tone.Analyser("waveform", 256);
+
 export default class Player {
   constructor(count) {
     this.loopCallback = () => {};
@@ -65,6 +66,9 @@ export default class Player {
 export function usePlayer(count) {
   const player = useRef();
   useEffect(() => {
+    if (player.current) {
+      player.current.releaseAll();
+    }
     player.current = new Player(count);
   }, [count]);
 

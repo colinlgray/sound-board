@@ -4,9 +4,10 @@ import FFT from "./components/FFT";
 import Player from "./utils/Player";
 import { without } from "lodash";
 import "./styles/tailwind.css";
+import { maxTimeCount } from "./constants";
 
 const initialStep = -1;
-const maxSize = 16;
+const maxSize = maxTimeCount;
 function App() {
   const [step, setStep] = useState(initialStep);
   const stepContainer = useRef(step);

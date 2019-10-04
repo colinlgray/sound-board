@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { usePlayer } from "../utils/Player";
 import Button from "./Button";
 import Dropdown from "./Dropdown";
+import { maxTimeCount } from "../constants";
 
 export default function Row(props) {
   const { maxSize, step, onClick, rowData } = props;
@@ -18,8 +19,7 @@ export default function Row(props) {
   );
 
   let els = [];
-  // TODO: Transform the 16n notes to whatever row count is using
-  const relativeStep = Math.floor(step / Math.floor(16 / size));
+  const relativeStep = Math.floor(step / Math.floor(maxTimeCount / size));
   for (let colIdx = 0; colIdx < size; colIdx++) {
     els.push(
       <Button
