@@ -8,10 +8,12 @@ import { maxTimeCount } from "./constants";
 
 const initialStep = -1;
 const maxSize = maxTimeCount;
+const buttonClasses =
+  "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2";
 function App() {
   const [step, setStep] = useState(initialStep);
   const stepContainer = useRef(step);
-  const callbackContainer = useRef({ clear: [] });
+  const callbackContainer = useRef({ clear: [], addRow: [] });
   const playerContainer = useRef();
 
   const emitter = {
@@ -52,7 +54,7 @@ function App() {
       </div>
       <div className="flex items-center justify-between p-2">
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2"
+          className={buttonClasses}
           onClick={() => {
             playerContainer.current.constructor.startLoop();
           }}
@@ -60,7 +62,7 @@ function App() {
           Start
         </button>
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2"
+          className={buttonClasses}
           onClick={() => {
             playerContainer.current.stopLoop();
 
@@ -71,12 +73,20 @@ function App() {
           Stop
         </button>
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2"
+          className={buttonClasses}
           onClick={() => {
             callbackContainer.current.clear.forEach(fn => fn());
           }}
         >
           Clear
+        </button>
+        <button
+          className={buttonClasses}
+          onClick={() => {
+            callbackContainer.current.addRow.forEach(fn => fn());
+          }}
+        >
+          Add row
         </button>
       </div>
       <Board maxSize={maxSize} step={step} emitter={emitter} />
