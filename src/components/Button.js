@@ -11,12 +11,13 @@ export default function Button(props) {
   }, [highlight, clicked, notes, time, playNote]);
 
   let colorWeight = 700;
-  if (recording) {
-    colorWeight = 800;
-  } else if (props.highlight && props.clicked) {
+  if (props.highlight && props.clicked) {
     colorWeight = 300;
   } else if (props.highlight || props.clicked) {
     colorWeight = 400;
+  }
+  if (recording) {
+    colorWeight += 200;
   }
   let classes = `mx-1 w-full h-full rounded cursor-pointer flex items-center justify-center bg-${color}-${colorWeight}`;
   return (
