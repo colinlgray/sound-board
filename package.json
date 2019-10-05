@@ -1,7 +1,11 @@
 {
-  "name": "button-board",
+  "name": "sound-board",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Colin Gray",
+    "email": "colin@cgray.dev"
+  },
   "dependencies": {
     "autoprefixer": "^9.6.1",
     "clsx": "^1.0.4",
