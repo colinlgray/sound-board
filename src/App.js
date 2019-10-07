@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Board from "./components/Board";
 import FFT from "./components/FFT";
+import Meter from "./components/Meter";
 import Player from "./utils/Player";
 import { without } from "lodash";
 import "./styles/tailwind.css";
@@ -50,7 +51,9 @@ function App() {
   return (
     <div className="flex flex-col h-screen items-center justify-center bg-gray-200">
       <div className="flex items-center justify-between p-2">
+        <Meter />
         <FFT />
+        <Meter />
       </div>
       <div className="flex items-center justify-between p-2">
         <button
