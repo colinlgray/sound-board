@@ -3,6 +3,7 @@ import { usePlayer } from "../utils/Player";
 import Button from "./Button";
 import Dropdown from "./Dropdown";
 import { maxTimeCount } from "../constants";
+import { ReactComponent as DeleteIcon } from "../icons/delete.svg";
 
 export default function Row(props) {
   const { maxSize, step, onClick, rowData } = props;
@@ -44,6 +45,12 @@ export default function Row(props) {
           setSize(val);
         }}
       />
+      <div
+        className="mx-1 w-full h-full rounded cursor-pointer flex items-center justify-center bg-white"
+        onClick={props.onDelete}
+      >
+        <DeleteIcon />
+      </div>
     </div>
   );
 }

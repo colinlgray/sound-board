@@ -65,6 +65,11 @@ export default function Board(props) {
                 clone[rowIdx][colIdx].notes = [];
                 setBoard(clone);
               }}
+              onDelete={() => {
+                const clone = [...board];
+                clone.splice(rowIdx, 1);
+                setBoard(clone);
+              }}
             />
           ))}
         </div>
