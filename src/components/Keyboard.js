@@ -76,8 +76,8 @@ function Key(props) {
 export default function Keyboard({ onClick }) {
   const [keyState, setKeyState] = useState(initialKeyState);
   const player = usePlayer(Object.keys(initialKeyState).length);
-  useEffect(() => {
-    const keys = keyState.reduce((memo, keyState) => {
+  const playPressedNotes = board => {
+    const keys = board.reduce((memo, keyState) => {
       if (keyState.pressed) {
         return memo.concat(keyState.note);
       }
@@ -87,7 +87,8 @@ export default function Keyboard({ onClick }) {
       onClick(keys);
       player.current.attack(keys);
     }
-  }, [keyState, player, onClick]);
+  };
+
   return (
     <div className="flex justify-center w-full p-4">
       {keyState.map((state, idx) => (
@@ -99,6 +100,7 @@ export default function Keyboard({ onClick }) {
               const clone = [...keyState];
               clone[idx].pressed = true;
               setKeyState(clone);
+              playPressedNotes(clone);
             }
           }}
           onRelease={() => {
