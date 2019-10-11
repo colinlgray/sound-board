@@ -68,6 +68,8 @@ function Key(props) {
       onMouseDown={props.onAttack}
       onMouseUp={props.onRelease}
       onMouseLeave={props.onRelease}
+      onTouchCancel={props.onRelease}
+      onTouchEnd={props.onRelease}
       role="button"
     />
   );
