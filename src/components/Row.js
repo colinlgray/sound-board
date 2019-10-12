@@ -37,19 +37,21 @@ export default function Row(props) {
   }
   return (
     <div className="flex w-full h-full m-2">
-      {els}
-      <Dropdown
-        options={[4, 8, 16]}
-        value={size}
-        onChange={val => {
-          setSize(val);
-        }}
-      />
-      <div
-        className="mx-1 w-full h-full rounded cursor-pointer flex items-center justify-center bg-white"
-        onClick={props.onDelete}
-      >
-        <DeleteIcon />
+      <div className="flex w-full">{els}</div>
+      <div className="flex">
+        <Dropdown
+          options={[4, 8, 16]}
+          value={size}
+          onChange={val => {
+            setSize(val);
+          }}
+        />
+        <div
+          className="mx-1 w-full h-full rounded cursor-pointer flex items-center justify-center bg-white"
+          onClick={props.onDelete}
+        >
+          <DeleteIcon />
+        </div>
       </div>
     </div>
   );
