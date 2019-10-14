@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { usePlayer } from "../utils/Player";
+import usePlayer from "../hooks/usePlayer";
 import Button from "./Button";
 import Dropdown from "./Dropdown";
 import { maxTimeCount } from "../constants";

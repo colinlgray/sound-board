@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import "./Keyboard.css";
-import { usePlayer } from "../utils/Player";
+import usePlayer from "../hooks/usePlayer";
 
 const initialKeyState = [
   { color: "white", note: "C4", pressed: false, shortcut: "a" },
@@ -76,7 +76,7 @@ function Key(props) {
 }
 
 export default function Keyboard({ onClick }) {
-  const [keyState, setKeyState] = useState(initialKeyState);
+  const [keyState, setKeyState] = useState([...initialKeyState]);
   const player = usePlayer(Object.keys(initialKeyState).length);
   const playPressedNotes = board => {
     const keys = board.reduce((memo, keyState) => {
@@ -91,6 +91,20 @@ export default function Keyboard({ onClick }) {
     }
   };
 
+  useEffect(() => {
+    const blurListener = () => {
+      if (player.current) {
+        setKeyState([...initialKeyState]);
+        player.current.instrument.releaseAll();
+      }
+    };
+
+    window.addEventListener("blur", blurListener);
+    return () => {
+      window.removeEventListener("blur", blurListener);
+    };
+  }, [player]);
+
   return (
     <div className="flex justify-center w-full p-4">
       {keyState.map((state, idx) => (
@@ -100,7 +114,7 @@ export default function Keyboard({ onClick }) {
           onAttack={() => {
             if (!keyState[idx].pressed) {
               const clone = [...keyState];
-              clone[idx].pressed = true;
+              clone[idx] = { ...clone[idx], pressed: true };
               setKeyState(clone);
               playPressedNotes(clone);
             }
@@ -109,6 +123,7 @@ export default function Keyboard({ onClick }) {
             if (keyState[idx].pressed) {
               const clone = [...keyState];
               clone[idx].pressed = false;
+              clone[idx] = { ...clone[idx], pressed: false };
               setKeyState(clone);
               player.current.release(state.note);
             }

@@ -1,4 +1,3 @@
-import { useRef, useEffect } from "react";
 import Tone from "tone";
 import { without } from "lodash";
 
@@ -61,16 +60,4 @@ export default class Player {
     });
     this.instrument.triggerAttackRelease(notes, ...rest);
   }
-}
-
-export function usePlayer(count) {
-  const player = useRef();
-  useEffect(() => {
-    if (player.current) {
-      player.current.releaseAll();
-    }
-    player.current = new Player(count);
-  }, [count]);
-
-  return player;
 }
