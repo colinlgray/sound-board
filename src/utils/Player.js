@@ -17,18 +17,9 @@ export const waveform = new Tone.Analyser("waveform", 256);
 
 export default class Player {
   constructor(count) {
+    this.changeInstrument = this.changeInstrument.bind(this);
     this.loopCallback = () => {};
-    if (!count || count === 1) {
-      this.instrument = new Tone.Synth()
-        .connect(meter)
-        .fan(fft, waveform)
-        .toMaster();
-    } else {
-      this.instrument = new Tone.PolySynth(count, Tone.Synth)
-        .connect(meter)
-        .fan(fft, waveform)
-        .toMaster();
-    }
+    this.changeInstrument(count, "Synth");
   }
   createLoop(fn) {
     this.loopCallback = fn;
@@ -60,5 +51,15 @@ export default class Player {
       cb(notes);
     });
     this.instrument.triggerAttackRelease(notes, ...rest);
+  }
+
+  changeInstrument(count, newInstrumentConstructor) {
+    if (this.instrument) {
+      this.instrument.releaseAll();
+    }
+    this.instrument = new Tone.PolySynth(count, Tone[newInstrumentConstructor])
+      .connect(meter)
+      .fan(fft, waveform)
+      .toMaster();
   }
 }
