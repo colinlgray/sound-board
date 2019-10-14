@@ -1,4 +1,5 @@
 import Tone from "tone";
+import { maxTimeCount } from "../constants";
 import { without } from "lodash";
 
 let evtCallbacks = [];
@@ -31,7 +32,7 @@ export default class Player {
   }
   createLoop(fn) {
     this.loopCallback = fn;
-    new Tone.Loop(this.loopCallback, "16n").start(0);
+    new Tone.Loop(this.loopCallback, `${maxTimeCount}n`).start(0);
   }
 
   static startLoop() {
