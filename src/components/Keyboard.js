@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import "./Keyboard.css";
 import usePlayer from "../hooks/usePlayer";
-import Dropdown from "../components/Dropdown";
+import { SynthNameContext } from "../contexts/SynthNameContext";
 
 const initialKeyState = [
   { color: "white", note: "C4", pressed: false, shortcut: "a" },
@@ -76,10 +76,8 @@ function Key(props) {
   );
 }
 
-const synthOptions = ["Synth", "AMSynth", "DuoSynth"];
-export default function Keyboard({ onClick }) {
+export default function Keyboard({ onClick, synthName }) {
   const [keyState, setKeyState] = useState([...initialKeyState]);
-  const [synthName, setSynthName] = useState(synthOptions[0]);
   const playerSize = Object.keys(initialKeyState).length;
   const player = usePlayer(playerSize);
   const playPressedNotes = board => {
@@ -94,7 +92,11 @@ export default function Keyboard({ onClick }) {
       player.current.attack(keys);
     }
   };
-
+  useEffect(() => {
+    if (player.current) {
+      player.current.changeInstrument(playerSize, synthName);
+    }
+  }, [synthName, player, playerSize]);
   useEffect(() => {
     const blurListener = () => {
       if (player.current) {
@@ -110,41 +112,31 @@ export default function Keyboard({ onClick }) {
   }, [player]);
 
   return (
-    <>
-      <div className="flex justify-center w-full p-4">
-        {keyState.map((state, idx) => (
-          <Key
-            key={idx}
-            hightlight={false}
-            onAttack={() => {
-              if (!keyState[idx].pressed) {
-                const clone = [...keyState];
-                clone[idx] = { ...clone[idx], pressed: true };
-                setKeyState(clone);
-                playPressedNotes(clone);
-              }
-            }}
-            onRelease={() => {
-              if (keyState[idx].pressed) {
-                const clone = [...keyState];
-                clone[idx].pressed = false;
-                clone[idx] = { ...clone[idx], pressed: false };
-                setKeyState(clone);
-                player.current.release(state.note);
-              }
-            }}
-            {...state}
-          />
-        ))}
-      </div>
-      <Dropdown
-        options={synthOptions}
-        value={synthName}
-        onChange={val => {
-          setSynthName(val);
-          player.current.changeInstrument(playerSize, val);
-        }}
-      />
-    </>
+    <div className="flex justify-center w-full p-4">
+      {keyState.map((state, idx) => (
+        <Key
+          key={idx}
+          hightlight={false}
+          onAttack={() => {
+            if (!keyState[idx].pressed) {
+              const clone = [...keyState];
+              clone[idx] = { ...clone[idx], pressed: true };
+              setKeyState(clone);
+              playPressedNotes(clone);
+            }
+          }}
+          onRelease={() => {
+            if (keyState[idx].pressed) {
+              const clone = [...keyState];
+              clone[idx].pressed = false;
+              clone[idx] = { ...clone[idx], pressed: false };
+              setKeyState(clone);
+              player.current.release(state.note);
+            }
+          }}
+          {...state}
+        />
+      ))}
+    </div>
   );
 }

@@ -2,20 +2,24 @@ import React, { useState, useEffect, useRef } from "react";
 import Board from "./components/Board";
 import FFT from "./components/FFT";
 import Meter from "./components/Meter";
+import Dropdown from "./components/Dropdown";
 import Player from "./utils/Player";
 import { without } from "lodash";
 import "./styles/tailwind.css";
 import { maxTimeCount } from "./constants";
+import { SynthNameContext } from "./contexts/SynthNameContext";
 
 const initialStep = -1;
 const maxSize = maxTimeCount;
 const buttonClasses =
   "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2";
+const synthOptions = ["Synth", "AMSynth", "DuoSynth"];
 function App() {
   const [step, setStep] = useState(initialStep);
+  const [synthName, setSynthName] = useState(synthOptions[0]);
   const stepContainer = useRef(step);
   const callbackContainer = useRef({ clear: [], addRow: [] });
-  const playerContainer = useRef();
+  const loopPlayer = useRef();
 
   const emitter = {
     addEventListener: (event, fn) => {
@@ -44,8 +48,8 @@ function App() {
   };
 
   useEffect(() => {
-    playerContainer.current = new Player();
-    playerContainer.current.createLoop(tick);
+    loopPlayer.current = new Player();
+    loopPlayer.current.createLoop(tick);
   }, []);
 
   return (
@@ -59,7 +63,7 @@ function App() {
         <button
           className={buttonClasses}
           onClick={() => {
-            playerContainer.current.constructor.startLoop();
+            loopPlayer.current.constructor.startLoop();
           }}
         >
           Start
@@ -67,7 +71,7 @@ function App() {
         <button
           className={buttonClasses}
           onClick={() => {
-            playerContainer.current.stopLoop();
+            loopPlayer.current.stopLoop();
 
             stepContainer.current = initialStep;
             setStep(initialStep);
@@ -91,8 +95,17 @@ function App() {
         >
           Add row
         </button>
+        <Dropdown
+          options={synthOptions}
+          value={synthName}
+          onChange={val => {
+            setSynthName(val);
+          }}
+        />
       </div>
-      <Board maxSize={maxSize} step={step} emitter={emitter} />
+      <SynthNameContext.Provider value={synthName}>
+        <Board maxSize={maxSize} step={step} emitter={emitter} />
+      </SynthNameContext.Provider>
     </div>
   );
 }

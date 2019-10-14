@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Row from "./Row";
 import Keyboard from "./Keyboard";
+import { SynthNameContext } from "../contexts/SynthNameContext";
 import { map } from "lodash";
 
 const getEmptyRow = size => {
@@ -75,7 +76,9 @@ export default function Board(props) {
         </div>
       </div>
       <div className="p-4 w-full justify-center">
-        <Keyboard onClick={lookForEvt} />
+        <SynthNameContext.Consumer>
+          {value => <Keyboard onClick={lookForEvt} synthName={value} />}
+        </SynthNameContext.Consumer>
       </div>
     </div>
   );
