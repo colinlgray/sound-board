@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import "./Keyboard.css";
 import usePlayer from "../hooks/usePlayer";
-import { SynthNameContext } from "../contexts/SynthNameContext";
 
 const initialKeyState = [
   { color: "white", note: "C4", pressed: false, shortcut: "a" },
@@ -80,6 +79,34 @@ export default function Keyboard({ onClick, synthName }) {
   const [keyState, setKeyState] = useState([...initialKeyState]);
   const playerSize = Object.keys(initialKeyState).length;
   const player = usePlayer(playerSize);
+
+  useEffect(() => {
+    const releaseLastKeyIfShift = e => {
+      let lastFoundIdx = -1;
+      if (e.key === "Shift") {
+        keyState.forEach((val, idx) => {
+          if (val.pressed) {
+            lastFoundIdx = idx;
+          }
+        });
+        if (lastFoundIdx >= 0) {
+          const clone = [...keyState];
+          clone[lastFoundIdx].pressed = false;
+          clone[lastFoundIdx] = { ...clone[lastFoundIdx], pressed: false };
+          setKeyState(clone);
+          player.current.release(clone[lastFoundIdx].note);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", releaseLastKeyIfShift);
+    window.addEventListener("keyup", releaseLastKeyIfShift);
+    return () => {
+      window.removeEventListener("keydown", releaseLastKeyIfShift);
+      window.removeEventListener("keyup", releaseLastKeyIfShift);
+    };
+  }, [keyState, player]);
+
   const playPressedNotes = board => {
     const keys = board.reduce((memo, keyState) => {
       if (keyState.pressed) {
