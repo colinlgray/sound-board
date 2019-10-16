@@ -48,7 +48,7 @@ function App() {
   };
 
   useEffect(() => {
-    loopPlayer.current = new Player();
+    loopPlayer.current = new Player(1);
     loopPlayer.current.createLoop(tick);
   }, []);
 

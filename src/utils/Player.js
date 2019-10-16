@@ -1,5 +1,5 @@
 import Tone from "tone";
-import { maxTimeCount } from "../constants";
+import { maxTimeCount, maxPolySynthSize } from "../constants";
 import { without } from "lodash";
 
 let evtCallbacks = [];
@@ -54,10 +54,18 @@ export default class Player {
   }
 
   changeInstrument(count, newInstrumentConstructor) {
+    let synthSize = count;
+    if (count > maxPolySynthSize) {
+      synthSize = maxPolySynthSize;
+    }
     if (this.instrument) {
       this.instrument.releaseAll();
     }
-    this.instrument = new Tone.PolySynth(count, Tone[newInstrumentConstructor])
+    console.log(synthSize);
+    this.instrument = new Tone.PolySynth(
+      synthSize,
+      Tone[newInstrumentConstructor]
+    )
       .connect(meter)
       .fan(fft, waveform)
       .toMaster();
