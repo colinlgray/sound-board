@@ -82,19 +82,19 @@ export default function Keyboard({ onClick, synthName }) {
 
   useEffect(() => {
     const releaseLastKeyIfShift = e => {
-      let lastFoundIdx = -1;
+      let sawChange = false;
       if (e.key === "Shift") {
-        keyState.forEach((val, idx) => {
+        const clone = keyState.map((val, idx) => {
           if (val.pressed) {
-            lastFoundIdx = idx;
+            sawChange = true;
+            player.current.release(val.note);
+            return { ...val, pressed: false };
           }
+          return val;
         });
-        if (lastFoundIdx >= 0) {
-          const clone = [...keyState];
-          clone[lastFoundIdx].pressed = false;
-          clone[lastFoundIdx] = { ...clone[lastFoundIdx], pressed: false };
+
+        if (sawChange) {
           setKeyState(clone);
-          player.current.release(clone[lastFoundIdx].note);
         }
       }
     };
@@ -116,6 +116,9 @@ export default function Keyboard({ onClick, synthName }) {
     }, []);
     if (keys.length > 0) {
       onClick(keys);
+      if (process.env.NODE_ENV === "DEBUG") {
+        console.log("attack", keys);
+      }
       player.current.attack(keys);
     }
   };
@@ -158,6 +161,9 @@ export default function Keyboard({ onClick, synthName }) {
               clone[idx].pressed = false;
               clone[idx] = { ...clone[idx], pressed: false };
               setKeyState(clone);
+              if (process.env.NODE_ENV === "DEBUG") {
+                console.log("release", [state.note]);
+              }
               player.current.release(state.note);
             }
           }}
