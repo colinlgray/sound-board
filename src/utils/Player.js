@@ -61,7 +61,6 @@ export default class Player {
     if (this.instrument) {
       this.instrument.releaseAll();
     }
-    console.log(synthSize);
     this.instrument = new Tone.PolySynth(
       synthSize,
       Tone[newInstrumentConstructor]
