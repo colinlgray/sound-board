@@ -6,14 +6,12 @@ import Dropdown from "./components/Dropdown";
 import Player from "./utils/Player";
 import { without } from "lodash";
 import "./styles/tailwind.css";
-import { maxTimeCount } from "./constants";
-import { SynthNameContext } from "./contexts/SynthNameContext";
+import { maxTimeCount, synthOptions } from "./constants";
 
 const initialStep = -1;
 const maxSize = maxTimeCount;
 const buttonClasses =
   "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2";
-const synthOptions = ["Synth", "AMSynth", "DuoSynth"];
 function App() {
   const [step, setStep] = useState(initialStep);
   const [synthName, setSynthName] = useState(synthOptions[0]);
@@ -103,9 +101,12 @@ function App() {
           }}
         />
       </div>
-      <SynthNameContext.Provider value={synthName}>
-        <Board maxSize={maxSize} step={step} emitter={emitter} />
-      </SynthNameContext.Provider>
+      <Board
+        maxSize={maxSize}
+        step={step}
+        emitter={emitter}
+        synthName={synthName}
+      />
     </div>
   );
 }

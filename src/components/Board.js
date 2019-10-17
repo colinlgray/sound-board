@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Row from "./Row";
 import Keyboard from "./Keyboard";
-import { SynthNameContext } from "../contexts/SynthNameContext";
 import { map } from "lodash";
 
 const getEmptyRow = size => {
   return [
     new Array(size).fill(0).map(() => {
-      return { notes: [], clicked: false };
+      return { notes: [], synthName: null, clicked: false };
     })
   ];
 };
 
 export default function Board(props) {
-  const { maxSize } = props;
+  const { maxSize, synthName } = props;
   const [board, setBoard] = useState(getEmptyRow(maxSize));
   useEffect(() => {
     const clear = () => {
@@ -42,12 +41,13 @@ export default function Board(props) {
           if (el.clicked && !el.notes.length) {
             const clone = [...board];
             clone[rowIdx][colIdx].notes = notes;
+            clone[rowIdx][colIdx].synthName = synthName;
             setBoard(clone);
           }
         });
       });
     },
-    [board]
+    [board, synthName]
   );
 
   return (
@@ -76,9 +76,7 @@ export default function Board(props) {
         </div>
       </div>
       <div className="p-4 w-full justify-center">
-        <SynthNameContext.Consumer>
-          {value => <Keyboard onClick={lookForEvt} synthName={value} />}
-        </SynthNameContext.Consumer>
+        <Keyboard onClick={lookForEvt} synthName={synthName} />
       </div>
     </div>
   );

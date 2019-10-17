@@ -119,19 +119,15 @@ export default function Keyboard({ onClick, synthName }) {
       if (process.env.NODE_ENV === "DEBUG") {
         console.log("attack", keys);
       }
-      player.current.attack(keys);
+      player.current.attack(synthName, keys);
     }
   };
-  useEffect(() => {
-    if (player.current) {
-      player.current.changeInstrument(playerSize, synthName);
-    }
-  }, [synthName, player, playerSize]);
+
   useEffect(() => {
     const blurListener = () => {
       if (player.current) {
         setKeyState([...initialKeyState]);
-        player.current.instrument.releaseAll();
+        player.current.releaseAll();
       }
     };
 
@@ -164,7 +160,7 @@ export default function Keyboard({ onClick, synthName }) {
               if (process.env.NODE_ENV === "DEBUG") {
                 console.log("release", [state.note]);
               }
-              player.current.release(state.note);
+              player.current.release(synthName, state.note);
             }
           }}
           {...state}

@@ -1,5 +1,5 @@
 import Tone from "tone";
-import { maxTimeCount, maxPolySynthSize } from "../constants";
+import { maxTimeCount, maxPolySynthSize, synthOptions } from "../constants";
 import { without } from "lodash";
 
 let evtCallbacks = [];
@@ -17,9 +17,9 @@ export const waveform = new Tone.Analyser("waveform", 256);
 
 export default class Player {
   constructor(count) {
-    this.changeInstrument = this.changeInstrument.bind(this);
     this.loopCallback = () => {};
-    this.changeInstrument(count, "Synth");
+    this.initInstruments(count);
+    this.releaseAll = this.releaseAll.bind(this);
   }
   createLoop(fn) {
     this.loopCallback = fn;
@@ -35,33 +35,54 @@ export default class Player {
     this.loopCallback = () => {};
   }
 
-  attack(notes, ...rest) {
+  attack(synthName, notes, ...rest) {
     evtCallbacks.forEach(cb => {
       cb(notes);
     });
-    this.instrument.triggerAttack(notes, ...rest);
+    if (!this[synthName]) {
+      console.error("Unable to find synth", synthName);
+      return;
+    }
+    this[synthName].triggerAttack(notes, ...rest);
   }
 
-  release(...rest) {
-    this.instrument.triggerRelease(...rest);
+  release(synthName, ...rest) {
+    if (!this[synthName]) {
+      console.error("Unable to find synth", synthName);
+      return;
+    }
+    this[synthName].triggerRelease(...rest);
   }
 
-  attackRelease(notes, ...rest) {
+  releaseAll() {
+    synthOptions.forEach(synthConstructorName => {
+      this[synthConstructorName].releaseAll();
+    });
+  }
+
+  attackRelease(synthName, notes, ...rest) {
     evtCallbacks.forEach(cb => {
       cb(notes);
     });
-    this.instrument.triggerAttackRelease(notes, ...rest);
+    if (!this[synthName]) {
+      console.error("Unable to find synth", synthName);
+      return;
+    }
+    this[synthName].triggerAttackRelease(notes, ...rest);
   }
 
-  changeInstrument(count, newInstrumentConstructor) {
+  initInstruments(count) {
     let synthSize = count;
     if (count > maxPolySynthSize) {
       synthSize = maxPolySynthSize;
     }
-    if (this.instrument) {
-      this.instrument.releaseAll();
-    }
-    this.instrument = new Tone.PolySynth(
+    synthOptions.forEach(synthConstructorName => {
+      this.setInstrument(synthSize, synthConstructorName);
+    });
+  }
+
+  setInstrument(synthSize, newInstrumentConstructor) {
+    this[newInstrumentConstructor] = new Tone.PolySynth(
       synthSize,
       Tone[newInstrumentConstructor]
     )
