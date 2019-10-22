@@ -8,10 +8,11 @@ const connectToDatabase = () => {
     return Promise.resolve();
   }
 
-  console.log("=> using new database connection");
-  return mongoose.connect(process.env.DB).then(db => {
-    isConnected = db.connections[0].readyState;
-  });
+  return mongoose
+    .connect(process.env.DB, { useNewUrlParser: "true" })
+    .then(db => {
+      isConnected = db.connections[0].readyState;
+    });
 };
 
 module.exports = connectToDatabase;
