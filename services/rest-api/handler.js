@@ -1,12 +1,12 @@
 const connectToDatabase = require("./db");
-const Note = require("./models/Note");
+const NoteSequence = require("./models/NoteSequence");
 require("dotenv").config({ path: "./variables.env" });
 
 module.exports.create = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   connectToDatabase().then(() => {
-    Note.create(JSON.parse(event.body))
+    NoteSequence.create(JSON.parse(event.body))
       .then(note =>
         callback(null, {
           statusCode: 200,
@@ -27,7 +27,7 @@ module.exports.getOne = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   connectToDatabase().then(() => {
-    Note.findById(event.pathParameters.id)
+    NoteSequence.findById(event.pathParameters.id)
       .then(note =>
         callback(null, {
           statusCode: 200,
@@ -48,7 +48,7 @@ module.exports.getAll = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   connectToDatabase().then(() => {
-    Note.find()
+    NoteSequence.find()
       .then(notes =>
         callback(null, {
           statusCode: 200,
@@ -69,9 +69,13 @@ module.exports.update = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   connectToDatabase().then(() => {
-    Note.findByIdAndUpdate(event.pathParameters.id, JSON.parse(event.body), {
-      new: true
-    })
+    NoteSequence.findByIdAndUpdate(
+      event.pathParameters.id,
+      JSON.parse(event.body),
+      {
+        new: true
+      }
+    )
       .then(note =>
         callback(null, {
           statusCode: 200,
@@ -92,7 +96,7 @@ module.exports.del = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   connectToDatabase().then(() => {
-    Note.findByIdAndRemove(event.pathParameters.id)
+    NoteSequence.findByIdAndRemove(event.pathParameters.id)
       .then(note =>
         callback(null, {
           statusCode: 200,
