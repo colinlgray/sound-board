@@ -50,6 +50,15 @@ function App() {
     loopPlayer.current.createLoop(tick);
   }, []);
 
+  useEffect(() => {
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("sequence")) {
+      console.log(
+        `TODO: Hit serverless api for id:${urlParams.get("sequence")}`
+      );
+    }
+  }, []);
+
   return (
     <div className="flex flex-col h-screen items-center justify-center bg-gray-200">
       <div className="flex items-center justify-between p-2">
