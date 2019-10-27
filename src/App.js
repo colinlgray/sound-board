@@ -54,7 +54,9 @@ function App() {
     var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("sequence")) {
       console.log(
-        `TODO: Hit serverless api for id:${urlParams.get("sequence")}`
+        `TODO: Hit serverless api at:${
+          process.env.REACT_APP_SEQUENCE_API_ROOT
+        }/notes/${urlParams.get("sequence")}`
       );
     }
   }, []);
