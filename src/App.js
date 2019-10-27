@@ -7,7 +7,7 @@ import Player from "./utils/Player";
 import { without } from "lodash";
 import "./styles/tailwind.css";
 import { maxTimeCount, synthOptions } from "./constants";
-
+const API_URL = "https://ywd48sesva.execute-api.us-east-1.amazonaws.com/dev";
 const initialStep = -1;
 const maxSize = maxTimeCount;
 const buttonClasses =
@@ -54,9 +54,9 @@ function App() {
     var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("sequence")) {
       console.log(
-        `TODO: Hit serverless api at:${
-          process.env.REACT_APP_SEQUENCE_API_ROOT
-        }/notes/${urlParams.get("sequence")}`
+        `TODO: Hit serverless api at:${API_URL}/notes/${urlParams.get(
+          "sequence"
+        )}`
       );
     }
   }, []);
