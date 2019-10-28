@@ -1,20 +1,33 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Board from "./components/Board";
 import FFT from "./components/FFT";
 import Meter from "./components/Meter";
 import Dropdown from "./components/Dropdown";
 import Player from "./utils/Player";
 import { without } from "lodash";
+import { map } from "lodash";
 import "./styles/tailwind.css";
 import { maxTimeCount, synthOptions } from "./constants";
-const API_URL = "https://ywd48sesva.execute-api.us-east-1.amazonaws.com/dev";
-const initialStep = -1;
-const maxSize = maxTimeCount;
+
+const API_URL =
+  "https://ywd48sesva.execute-api.us-east-1.amazonaws.com/dev/sequence";
 const buttonClasses =
-  "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2";
+  "bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded m-1";
+const maxSize = maxTimeCount;
+const initialStep = -1;
+
+const getEmptyRow = size => {
+  return [
+    new Array(size).fill(0).map(() => {
+      return { notes: [], synthName: null, clicked: false };
+    })
+  ];
+};
+
 function App() {
   const [step, setStep] = useState(initialStep);
   const [synthName, setSynthName] = useState(synthOptions[0]);
+  const [board, setBoard] = useState(getEmptyRow(maxSize));
   const stepContainer = useRef(step);
   const callbackContainer = useRef({ clear: [], addRow: [] });
   const loopPlayer = useRef();
@@ -45,30 +58,44 @@ function App() {
     setStep(stepContainer.current);
   };
 
-  useEffect(() => {
-    loopPlayer.current = new Player(1);
-    loopPlayer.current.createLoop(tick);
-  }, []);
+  const onNotePress = useCallback(
+    notes => {
+      board.forEach((row, rowIdx) => {
+        row.forEach((el, colIdx) => {
+          if (el.clicked && !el.notes.length) {
+            const clone = [...board];
+            clone[rowIdx][colIdx].notes = notes;
+            clone[rowIdx][colIdx].synthName = synthName;
+            setBoard(clone);
+          }
+        });
+      });
+    },
+    [board, synthName]
+  );
 
   useEffect(() => {
+    // Setup time loop
+    loopPlayer.current = new Player(1);
+    loopPlayer.current.createLoop(tick);
+
+    // Look for query param
     var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("sequence")) {
       console.log(
-        `TODO: Hit serverless api at:${API_URL}/notes/${urlParams.get(
-          "sequence"
-        )}`
+        `TODO: Hit serverless api at:${API_URL}/${urlParams.get("sequence")}`
       );
     }
   }, []);
 
   return (
     <div className="flex flex-col h-screen items-center justify-center bg-gray-200">
-      <div className="flex items-center justify-between p-2">
+      <div className="flex items-center justify-between p-1">
         <Meter />
         <FFT />
         <Meter />
       </div>
-      <div className="flex items-center justify-between p-2">
+      <div className="flex items-center justify-between p-1 text-sm">
         <button
           className={buttonClasses}
           onClick={() => {
@@ -91,7 +118,12 @@ function App() {
         <button
           className={buttonClasses}
           onClick={() => {
-            callbackContainer.current.clear.forEach(fn => fn());
+            const clone = map(board, row => {
+              return map(row, val => {
+                return { ...val, notes: [], clicked: false };
+              });
+            });
+            setBoard(clone);
           }}
         >
           Clear
@@ -99,10 +131,18 @@ function App() {
         <button
           className={buttonClasses}
           onClick={() => {
-            callbackContainer.current.addRow.forEach(fn => fn());
+            setBoard(board.concat(getEmptyRow(maxSize)));
           }}
         >
           Add row
+        </button>
+        <button
+          className={buttonClasses}
+          onClick={() => {
+            console.log("not implemented");
+          }}
+        >
+          Save
         </button>
         <Dropdown
           options={synthOptions}
@@ -117,6 +157,19 @@ function App() {
         step={step}
         emitter={emitter}
         synthName={synthName}
+        board={board}
+        onButtonClick={(rowIdx, colIdx) => {
+          const clone = [...board];
+          clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx].clicked;
+          clone[rowIdx][colIdx].notes = [];
+          setBoard(clone);
+        }}
+        onDeleteRow={rowIdx => {
+          const clone = [...board];
+          clone.splice(rowIdx, 1);
+          setBoard(clone);
+        }}
+        onNotePress={onNotePress}
       />
     </div>
   );

@@ -75,7 +75,7 @@ function Key(props) {
   );
 }
 
-export default function Keyboard({ onClick, synthName }) {
+export default function Keyboard({ synthName, onNotePress }) {
   const [keyState, setKeyState] = useState([...initialKeyState]);
   const playerSize = Object.keys(initialKeyState).length;
   const player = usePlayer(playerSize);
@@ -115,7 +115,7 @@ export default function Keyboard({ onClick, synthName }) {
       return memo;
     }, []);
     if (keys.length > 0) {
-      onClick(keys);
+      onNotePress(keys);
       if (process.env.NODE_ENV === "DEBUG") {
         console.log("attack", keys);
       }
