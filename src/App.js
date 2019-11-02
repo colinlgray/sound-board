@@ -26,6 +26,7 @@ const getEmptyRow = size => {
 
 function App() {
   const [step, setStep] = useState(initialStep);
+  const [showModal, setShowModal] = useState(false);
   const [synthName, setSynthName] = useState(synthOptions[0]);
   const [board, setBoard] = useState(getEmptyRow(maxSize));
   const stepContainer = useRef(step);
@@ -89,7 +90,24 @@ function App() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen items-center justify-center bg-gray-200">
+    <div
+      className="flex flex-col h-screen items-center justify-center bg-gray-200"
+      onClick={() => {
+        if (showModal) {
+          setShowModal(false);
+        }
+      }}
+    >
+      {showModal && (
+        <div
+          style={{ backgroundColor: "rgba(25, 25, 25, .5)" }}
+          className="fixed inset-0 z-50 overflow-auto flex"
+        >
+          <div className="relative p-8 bg-white w-full max-w-md m-auto flex-col opacity-100 flex rounded">
+            Not implemented yet
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between p-1">
         <Meter />
         <FFT />
@@ -139,7 +157,7 @@ function App() {
         <button
           className={buttonClasses}
           onClick={() => {
-            console.log("not implemented");
+            setShowModal(true);
           }}
         >
           Save
