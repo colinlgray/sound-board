@@ -4,13 +4,12 @@ import FFT from "./components/FFT";
 import Meter from "./components/Meter";
 import Dropdown from "./components/Dropdown";
 import Player from "./utils/Player";
+import { postSequence, getSequence } from "./utils/network";
 import { without } from "lodash";
 import { map } from "lodash";
 import "./styles/tailwind.css";
 import { maxTimeCount, synthOptions } from "./constants";
 
-const API_URL =
-  "https://ywd48sesva.execute-api.us-east-1.amazonaws.com/dev/sequence";
 const buttonClasses =
   "bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded m-1";
 const maxSize = maxTimeCount;
@@ -83,9 +82,7 @@ function App() {
     // Look for query param
     var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("sequence")) {
-      console.log(
-        `TODO: Hit serverless api at:${API_URL}/${urlParams.get("sequence")}`
-      );
+      getSequence(urlParams.get("sequence"));
     }
   }, []);
 
@@ -157,7 +154,8 @@ function App() {
         <button
           className={buttonClasses}
           onClick={() => {
-            setShowModal(true);
+            postSequence(board);
+            // setShowModal(true);
           }}
         >
           Save
