@@ -87,7 +87,7 @@ export default function Keyboard({ synthName, onNotePress }) {
         const clone = keyState.map((val, idx) => {
           if (val.pressed) {
             sawChange = true;
-            player.current.release(val.note);
+            player.current.release(synthName, val.note);
             return { ...val, pressed: false };
           }
           return val;
@@ -105,7 +105,7 @@ export default function Keyboard({ synthName, onNotePress }) {
       window.removeEventListener("keydown", releaseLastKeyIfShift);
       window.removeEventListener("keyup", releaseLastKeyIfShift);
     };
-  }, [keyState, player]);
+  }, [keyState, player, synthName]);
 
   const playPressedNotes = board => {
     const keys = board.reduce((memo, keyState) => {
