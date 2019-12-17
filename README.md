@@ -18,3 +18,8 @@ Builds the app for production to the `build` folder.<br>
 #### More Info
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Serverless instructions
+
+Navigate to the rest api folder
+Start offline with `serverless offline start --port 3001 --skipCacheInvalidation`
