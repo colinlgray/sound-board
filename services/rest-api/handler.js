@@ -2,17 +2,25 @@ const connectToDatabase = require("./db");
 const NoteSequence = require("./models/NoteSequence");
 require("dotenv").config({ path: "./variables.env" });
 
+const baseSuccessResponse = {
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Credentials": true
+  },
+  statusCode: 200
+};
+
 module.exports.create = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   connectToDatabase().then(() => {
     NoteSequence.create({ board: JSON.parse(event.body) })
-      .then(note =>
+      .then(sequence => {
         callback(null, {
-          statusCode: 200,
-          body: JSON.stringify(note)
-        })
-      )
+          ...baseSuccessResponse,
+          body: JSON.stringify(sequence)
+        });
+      })
       .catch(err =>
         callback(null, {
           statusCode: err.statusCode || 500,
@@ -30,7 +38,7 @@ module.exports.getOne = (event, context, callback) => {
     NoteSequence.findById(event.pathParameters.id)
       .then(note =>
         callback(null, {
-          statusCode: 200,
+          ...baseSuccessResponse,
           body: JSON.stringify(note)
         })
       )
@@ -51,7 +59,7 @@ module.exports.getAll = (event, context, callback) => {
     NoteSequence.find()
       .then(notes =>
         callback(null, {
-          statusCode: 200,
+          ...baseSuccessResponse,
           body: JSON.stringify(notes)
         })
       )
@@ -78,7 +86,7 @@ module.exports.update = (event, context, callback) => {
     )
       .then(note =>
         callback(null, {
-          statusCode: 200,
+          ...baseSuccessResponse,
           body: JSON.stringify(note)
         })
       )
@@ -99,7 +107,7 @@ module.exports.del = (event, context, callback) => {
     NoteSequence.findByIdAndRemove(event.pathParameters.id)
       .then(note =>
         callback(null, {
-          statusCode: 200,
+          ...baseSuccessResponse,
           body: JSON.stringify({
             message: "Removed note with id: " + note._id,
             note: note

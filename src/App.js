@@ -15,6 +15,16 @@ const buttonClasses =
 const maxSize = maxTimeCount;
 const initialStep = -1;
 
+const parseBoard = board =>
+  board.map(arr =>
+    arr.map(val => {
+      if (val.notes.length) {
+        return { ...val, clicked: true };
+      }
+      return val;
+    })
+  );
+
 const getEmptyRow = size => {
   return [
     new Array(size).fill(0).map(() => {
@@ -82,7 +92,9 @@ function App() {
     // Look for query param
     var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("sequence")) {
-      getSequence(urlParams.get("sequence"));
+      getSequence(urlParams.get("sequence")).then(response => {
+        setBoard(parseBoard(response.data.board));
+      });
     }
   }, []);
 

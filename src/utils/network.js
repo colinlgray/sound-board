@@ -7,27 +7,9 @@ const api = axios.create({
 });
 
 export function postSequence(sequence) {
-  api
-    .post("/sequence", sequence)
-    .then(response => {
-      console.log(response);
-    })
-    .catch(error => {
-      console.error("caught error", error);
-    });
+  return api.post("/sequence", sequence);
 }
 
 export function getSequence(id) {
-  api
-    .get("/sequence", {
-      params: {
-        ID: id
-      }
-    })
-    .then(response => {
-      console.log(response);
-    })
-    .catch(error => {
-      console.error("caught error", error);
-    });
+  return api.get(`/sequence/${id}`);
 }
