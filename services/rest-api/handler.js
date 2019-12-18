@@ -6,7 +6,7 @@ module.exports.create = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   connectToDatabase().then(() => {
-    NoteSequence.create(JSON.parse(event.body))
+    NoteSequence.create({ board: JSON.parse(event.body) })
       .then(note =>
         callback(null, {
           statusCode: 200,
