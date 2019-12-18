@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import usePlayer from "../hooks/usePlayer";
 import Button from "./Button";
 import Dropdown from "./Dropdown";
@@ -7,8 +7,8 @@ import { ReactComponent as DeleteIcon } from "../icons/delete.svg";
 
 export default function Row(props) {
   const { maxSize, step, onClick, rowData } = props;
-  const [size, setSize] = useState(8);
-
+  // const [size, setSize] = useState(8);
+  let size = rowData.length;
   const player = usePlayer(maxSize);
   const playNote = useCallback(
     (...args) => {
@@ -42,9 +42,7 @@ export default function Row(props) {
         <Dropdown
           options={[4, 8, 16]}
           value={size}
-          onChange={val => {
-            setSize(val);
-          }}
+          onChange={props.onChangeRowSize}
         />
         <div
           className="mx-1 w-full h-full rounded cursor-pointer flex items-center justify-center bg-white"

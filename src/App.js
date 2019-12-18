@@ -5,7 +5,6 @@ import Meter from "./components/Meter";
 import Dropdown from "./components/Dropdown";
 import Player from "./utils/Player";
 import { postSequence, getSequence } from "./utils/network";
-import { without } from "lodash";
 import { map } from "lodash";
 import "./styles/tailwind.css";
 import { maxTimeCount, synthOptions } from "./constants";
@@ -13,6 +12,7 @@ import { maxTimeCount, synthOptions } from "./constants";
 const buttonClasses =
   "bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded m-1";
 const maxSize = maxTimeCount;
+const defaultSize = 8;
 const initialStep = -1;
 
 const getEmptyRow = size => {
@@ -29,25 +29,9 @@ function App() {
   const [saving, setSaving] = useState(false);
   const [shareId, setShareId] = useState("");
   const [synthName, setSynthName] = useState(synthOptions[0]);
-  const [board, setBoard] = useState(getEmptyRow(maxSize));
+  const [board, setBoard] = useState(getEmptyRow(defaultSize));
   const stepContainer = useRef(step);
-  const callbackContainer = useRef({ clear: [], addRow: [] });
   const loopPlayer = useRef();
-
-  const emitter = {
-    addEventListener: (event, fn) => {
-      if (!callbackContainer.current[event]) {
-        callbackContainer.current[event] = [];
-      }
-      callbackContainer.current[event].push(fn);
-    },
-    removeEventListener: (event, fn) => {
-      callbackContainer.current[event] = without(
-        callbackContainer.current[event],
-        fn
-      );
-    }
-  };
 
   const tick = () => {
     let newVal;
@@ -126,9 +110,11 @@ function App() {
             {!saving && (
               <a
                 className="font-mono text-lg text-gray-800 text-center underline"
-                href={`${window.location.origin}/?sequence=${shareId}`}
+                href={`${
+                  window.location.href.split("?")[0]
+                }?sequence=${shareId}`}
               >
-                {window.location.origin}/?sequence={shareId}
+                {window.location.href.split("?")[0]}?sequence={shareId}
               </a>
             )}
           </div>
@@ -175,7 +161,7 @@ function App() {
         <button
           className={buttonClasses}
           onClick={() => {
-            setBoard(board.concat(getEmptyRow(maxSize)));
+            setBoard(board.concat(getEmptyRow(defaultSize)));
           }}
         >
           Add row
@@ -209,9 +195,9 @@ function App() {
       <Board
         maxSize={maxSize}
         step={step}
-        emitter={emitter}
         synthName={synthName}
         board={board}
+        setBoard={setBoard}
         onButtonClick={(rowIdx, colIdx) => {
           const clone = [...board];
           clone[rowIdx][colIdx].clicked = !clone[rowIdx][colIdx].clicked;

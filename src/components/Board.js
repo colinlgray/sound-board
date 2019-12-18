@@ -28,6 +28,20 @@ export default function Board(props) {
               onDelete={() => {
                 onDeleteRow(rowIdx);
               }}
+              onChangeRowSize={newSize => {
+                let newRow = [];
+                for (let i = 0; i < newSize; i++) {
+                  newRow.push({
+                    notes: [],
+                    synthName: null,
+                    clicked: false,
+                    ...board[rowIdx][i]
+                  });
+                }
+                const clone = board.slice();
+                clone[rowIdx] = newRow;
+                props.setBoard(clone);
+              }}
             />
           ))}
         </div>
