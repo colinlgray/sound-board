@@ -7,7 +7,7 @@ const api = axios.create({
 });
 
 export function postSequence(sequence) {
-  return api.post("/sequence", sequence);
+  return api.post("/sequence", sequence).then(res => res.data);
 }
 
 export function getSequence(id) {

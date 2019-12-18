@@ -36,6 +36,8 @@ const getEmptyRow = size => {
 function App() {
   const [step, setStep] = useState(initialStep);
   const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [shareId, setShareId] = useState("");
   const [synthName, setSynthName] = useState(synthOptions[0]);
   const [board, setBoard] = useState(getEmptyRow(maxSize));
   const stepContainer = useRef(step);
@@ -90,30 +92,52 @@ function App() {
     loopPlayer.current.createLoop(tick);
 
     // Look for query param
-    var urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // key listener for modal
+    const modalCloseListener = e => {
+      if (e.keyCode === 27) {
+        setShowModal(false);
+      }
+    };
+
+    window.addEventListener("keydown", modalCloseListener);
     if (urlParams.has("sequence")) {
-      getSequence(urlParams.get("sequence")).then(response => {
-        setBoard(parseBoard(response.data.board));
-      });
+      getSequence(urlParams.get("sequence"))
+        .then(response => {
+          setBoard(parseBoard(response.data.board));
+        })
+        .catch(err => {
+          console.error("error parsing board");
+          console.error(err);
+        });
     }
+
+    return () => {
+      window.removeEventListener("keydown", modalCloseListener);
+    };
   }, []);
 
   return (
-    <div
-      className="flex flex-col h-screen items-center justify-center bg-gray-200"
-      onClick={() => {
-        if (showModal) {
-          setShowModal(false);
-        }
-      }}
-    >
+    <div className="flex flex-col h-screen items-center justify-center bg-gray-200">
       {showModal && (
         <div
+          id="modal-bg"
+          onClick={e => {
+            if (e.target && e.target.id === "modal-bg" && showModal) {
+              setShowModal(false);
+            }
+          }}
           style={{ backgroundColor: "rgba(25, 25, 25, .5)" }}
           className="fixed inset-0 z-50 overflow-auto flex"
         >
           <div className="relative p-8 bg-white w-full max-w-md m-auto flex-col opacity-100 flex rounded">
-            Not implemented yet
+            {saving && <p>Saving...</p>}
+            {!saving && (
+              <p className="font-mono text-lg text-gray-800 text-center">
+                {window.location.origin}/?sequence={shareId}
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -165,12 +189,21 @@ function App() {
         </button>
         <button
           className={buttonClasses}
+          disabled={saving}
           onClick={() => {
-            postSequence(board);
-            // setShowModal(true);
+            setShowModal(true);
+            setSaving(true);
+            postSequence(board)
+              .then(res => {
+                setShareId(res._id);
+                setSaving(false);
+              })
+              .catch(() => {
+                setSaving(false);
+              });
           }}
         >
-          Save
+          Share
         </button>
         <Dropdown
           options={synthOptions}
