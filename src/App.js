@@ -15,16 +15,6 @@ const buttonClasses =
 const maxSize = maxTimeCount;
 const initialStep = -1;
 
-const parseBoard = board =>
-  board.map(arr =>
-    arr.map(val => {
-      if (val.notes.length) {
-        return { ...val, clicked: true };
-      }
-      return val;
-    })
-  );
-
 const getEmptyRow = size => {
   return [
     new Array(size).fill(0).map(() => {
@@ -104,8 +94,8 @@ function App() {
     window.addEventListener("keydown", modalCloseListener);
     if (urlParams.has("sequence")) {
       getSequence(urlParams.get("sequence"))
-        .then(response => {
-          setBoard(parseBoard(response.data.board));
+        .then(board => {
+          setBoard(board);
         })
         .catch(err => {
           console.error("error parsing board");
@@ -131,12 +121,15 @@ function App() {
           style={{ backgroundColor: "rgba(25, 25, 25, .5)" }}
           className="fixed inset-0 z-50 overflow-auto flex"
         >
-          <div className="relative p-8 bg-white w-full max-w-md m-auto flex-col opacity-100 flex rounded">
+          <div className="relative p-8 bg-white max-w-2xl min-w-md m-auto flex-col opacity-100 flex rounded">
             {saving && <p>Saving...</p>}
             {!saving && (
-              <p className="font-mono text-lg text-gray-800 text-center">
+              <a
+                className="font-mono text-lg text-gray-800 text-center underline"
+                href={`${window.location.origin}/?sequence=${shareId}`}
+              >
                 {window.location.origin}/?sequence={shareId}
-              </p>
+              </a>
             )}
           </div>
         </div>
