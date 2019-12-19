@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import "./Keyboard.css";
 import usePlayer from "../hooks/usePlayer";
+import usePrevious from "../hooks/usePrevious";
 
 const initialKeyState = [
   { color: "white", note: "C4", pressed: false, shortcut: "a" },
@@ -76,9 +77,16 @@ function Key(props) {
 }
 
 export default function Keyboard({ synthName, onNotePress }) {
+  const prev = usePrevious({ synthName });
   const [keyState, setKeyState] = useState([...initialKeyState]);
   const playerSize = Object.keys(initialKeyState).length;
   const player = usePlayer(playerSize);
+
+  useEffect(() => {
+    if (prev && prev.synthName) {
+      player.current.releaseAll(prev.synthName);
+    }
+  }, [player, prev]);
 
   useEffect(() => {
     const releaseLastKeyIfShift = e => {

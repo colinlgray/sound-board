@@ -54,10 +54,14 @@ export default class Player {
     this[synthName].triggerRelease(...rest);
   }
 
-  releaseAll() {
-    synthOptions.forEach(synthConstructorName => {
-      this[synthConstructorName].releaseAll();
-    });
+  releaseAll(synthName) {
+    if (synthName) {
+      this[synthName].releaseAll();
+    } else {
+      synthOptions.forEach(synthConstructorName => {
+        this[synthConstructorName].releaseAll();
+      });
+    }
   }
 
   attackRelease(synthName, notes, ...rest) {
