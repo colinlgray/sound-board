@@ -76,7 +76,7 @@ function App() {
     };
 
     window.addEventListener("keydown", modalCloseListener);
-    if (urlParams.has("sequence")) {
+    if (urlParams.has("sequence") && urlParams.get("sequence").length === 24) {
       getSequence(urlParams.get("sequence"))
         .then(board => {
           setBoard(board);
