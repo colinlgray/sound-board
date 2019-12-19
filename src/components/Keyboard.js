@@ -83,10 +83,10 @@ export default function Keyboard({ synthName, onNotePress }) {
   const player = usePlayer(playerSize);
 
   useEffect(() => {
-    if (prev && prev.synthName) {
+    if (prev && prev.synthName !== synthName) {
       player.current.releaseAll(prev.synthName);
     }
-  }, [player, prev]);
+  }, [player, prev, synthName]);
 
   useEffect(() => {
     const releaseLastKeyIfShift = e => {
